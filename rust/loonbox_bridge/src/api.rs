@@ -119,13 +119,13 @@ static CURRENT_STATE: Lazy<Mutex<EngineState>> =
     Lazy::new(|| Mutex::new(EngineState::default()));
 
 #[derive(Default)]
-struct EngineState {
-    state: EnginePlayerState,
-    position_ms: u64,
+pub struct EngineState {
+    pub state: EnginePlayerState,
+    pub position_ms: u64,
 }
 
 #[derive(Default)]
-enum EnginePlayerState {
+pub enum EnginePlayerState {
     #[default]
     Stopped,
     Loading,
@@ -411,6 +411,16 @@ pub fn player_set_gapless(enabled: bool) -> anyhow::Result<()> {
     with_engine(|engine| {
         engine
             .send_command(loonbox_audio::Command::SetGapless(enabled))
+            .map_err(|e| anyhow::anyhow!("{}", e))
+    })
+}
+
+/// Tell the decoder which track to play next for gapless transition.
+#[frb]
+pub fn player_preload_next(path: String) -> anyhow::Result<()> {
+    with_engine(|engine| {
+        engine
+            .send_command(loonbox_audio::Command::PreloadNext(path))
             .map_err(|e| anyhow::anyhow!("{}", e))
     })
 }

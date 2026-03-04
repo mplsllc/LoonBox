@@ -37,6 +37,7 @@ abstract class AudioService {
   // Gapless & crossfade
   Future<void> setCrossfade(int durationMs);
   Future<void> setGapless(bool enabled);
+  Future<void> preloadNext(String path);
 
   // Event stream
   Stream<PlayerEvent> get eventStream;

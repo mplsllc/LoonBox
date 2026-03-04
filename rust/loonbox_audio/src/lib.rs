@@ -46,11 +46,12 @@ pub enum Command {
     Play,
     Pause,
     Stop,
-    Seek(u64),      // position in ms
-    SetVolume(f32), // 0.0 - 1.0
+    Seek(u64),          // position in ms
+    SetVolume(f32),     // 0.0 - 1.0
     SetEq([f32; 10]),
     SetGapless(bool),
-    SetCrossfade(u32), // duration in ms
+    SetCrossfade(u32),  // duration in ms
+    PreloadNext(String), // path to next track for gapless
     Shutdown,
 }
 

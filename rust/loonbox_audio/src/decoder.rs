@@ -168,6 +168,8 @@ struct DecoderState {
     current_track: Option<ActiveTrack>,
     sample_rate: u32,
     channels: u16,
+    gapless_enabled: bool,
+    next_track_path: Option<String>,
 }
 
 struct ActiveTrack {
@@ -194,6 +196,8 @@ pub fn decoder_thread(
         current_track: None,
         sample_rate: 0,
         channels: 0,
+        gapless_enabled: true,
+        next_track_path: None,
     };
 
     loop {
@@ -263,7 +267,13 @@ fn handle_command(state: &mut DecoderState, cmd: Command) -> bool {
         Command::Seek(ms) => {
             seek_to(state, ms);
         }
-        Command::SetVolume(_) | Command::SetEq(_) | Command::SetCrossfade(_) | Command::SetGapless(_) => {
+        Command::SetGapless(enabled) => {
+            state.gapless_enabled = enabled;
+        }
+        Command::PreloadNext(path) => {
+            state.next_track_path = Some(path);
+        }
+        Command::SetVolume(_) | Command::SetEq(_) | Command::SetCrossfade(_) => {
             // These are handled by the pipeline/engine, not the decoder
         }
         Command::Shutdown => return true,
@@ -382,6 +392,109 @@ fn load_track(state: &mut DecoderState, path: &str) {
         .send(AudioEvent::StateChanged(crate::state::PlayerState::Playing));
 }
 
+/// Load next track for gapless transition. Does NOT clear the ring buffer
+/// or stop playback — samples from the new track flow seamlessly after the old.
+fn gapless_load_track(state: &mut DecoderState, path: &str) {
+    let file = match std::fs::File::open(path) {
+        Ok(f) => f,
+        Err(e) => {
+            let _ = state.event_tx.send(AudioEvent::Error(
+                format!("Gapless: file not found: {}: {}", path, e),
+            ));
+            state.playing.store(false, Ordering::Release);
+            let _ = state.event_tx.send(AudioEvent::StateChanged(
+                crate::state::PlayerState::Stopped,
+            ));
+            state.current_track = None;
+            return;
+        }
+    };
+
+    let mss = MediaSourceStream::new(Box::new(file), Default::default());
+    let mut hint = Hint::new();
+    if let Some(ext) = std::path::Path::new(path).extension().and_then(|e| e.to_str()) {
+        hint.with_extension(ext);
+    }
+
+    let probed = match symphonia::default::get_probe().format(
+        &hint,
+        mss,
+        &FormatOptions::default(),
+        &MetadataOptions::default(),
+    ) {
+        Ok(p) => p,
+        Err(e) => {
+            let _ = state.event_tx.send(AudioEvent::Error(
+                format!("Gapless: unsupported format: {}: {}", path, e),
+            ));
+            state.playing.store(false, Ordering::Release);
+            state.current_track = None;
+            return;
+        }
+    };
+
+    let reader = probed.format;
+    let track = match reader.default_track() {
+        Some(t) => t.clone(),
+        None => {
+            let _ = state.event_tx.send(AudioEvent::Error(
+                "Gapless: no audio track found".into(),
+            ));
+            state.playing.store(false, Ordering::Release);
+            state.current_track = None;
+            return;
+        }
+    };
+
+    let decoder = match symphonia::default::get_codecs()
+        .make(&track.codec_params, &DecoderOptions::default())
+    {
+        Ok(d) => d,
+        Err(e) => {
+            let _ = state.event_tx.send(AudioEvent::Error(
+                format!("Gapless: codec error: {}", e),
+            ));
+            state.playing.store(false, Ordering::Release);
+            state.current_track = None;
+            return;
+        }
+    };
+
+    let sample_rate = track.codec_params.sample_rate.unwrap_or(44100);
+    let channels = track.codec_params.channels.map(|c| c.count() as u16).unwrap_or(2);
+    let bit_depth = track.codec_params.bits_per_sample.map(|b| b as u16);
+    let duration_ms = track
+        .codec_params
+        .n_frames
+        .map(|frames| frames * 1000 / sample_rate as u64)
+        .unwrap_or(0);
+    let codec_name = format!("{:?}", track.codec_params.codec);
+
+    let info = TrackInfo {
+        path: path.to_string(),
+        duration_ms,
+        sample_rate,
+        channels,
+        bit_depth,
+        codec: codec_name,
+    };
+
+    state.sample_rate = sample_rate;
+    state.channels = channels;
+
+    let _ = state.event_tx.send(AudioEvent::TrackLoaded(info.clone()));
+
+    state.current_track = Some(ActiveTrack {
+        reader,
+        decoder,
+        track_id: track.id,
+        info,
+        samples_decoded: 0,
+    });
+
+    // Playing continues — no state change event needed
+}
+
 fn decode_next_packet(state: &mut DecoderState) {
     let active = match state.current_track.as_mut() {
         Some(a) => a,
@@ -393,8 +506,18 @@ fn decode_next_packet(state: &mut DecoderState) {
         Err(symphonia::core::errors::Error::IoError(ref e))
             if e.kind() == std::io::ErrorKind::UnexpectedEof =>
         {
-            // End of stream
+            // End of stream — attempt gapless transition
             let _ = state.event_tx.send(AudioEvent::TrackFinished);
+
+            if state.gapless_enabled {
+                if let Some(next_path) = state.next_track_path.take() {
+                    // Gapless: load next track without clearing the ring buffer
+                    gapless_load_track(state, &next_path);
+                    return;
+                }
+            }
+
+            // No next track or gapless disabled — stop
             state.playing.store(false, Ordering::Release);
             let _ = state
                 .event_tx

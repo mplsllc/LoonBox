@@ -142,6 +142,10 @@ class RustAudioService implements AudioService {
       rust.playerSetGapless(enabled: enabled);
 
   @override
+  Future<void> preloadNext(String path) =>
+      rust.playerPreloadNext(path: path);
+
+  @override
   Stream<domain.PlayerEvent> get eventStream => _eventController.stream;
 
   void dispose() {
