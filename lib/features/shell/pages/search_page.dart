@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
+import 'album_detail_page.dart';
+import 'artist_detail_page.dart';
 
 /// Search results grouped by type.
 class SearchResults {
@@ -153,6 +155,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => ArtistDetailPage(artist: artist)),
+                      ),
                     )),
               ],
 
@@ -184,6 +189,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               overflow: TextOverflow.ellipsis,
                             )
                           : null,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => AlbumDetailPage(album: album)),
+                      ),
                     )),
               ],
 

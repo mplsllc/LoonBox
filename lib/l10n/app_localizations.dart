@@ -501,6 +501,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play All'**
   String get playAll;
+
+  /// Create new playlist button
+  ///
+  /// In en, this message translates to:
+  /// **'New Playlist'**
+  String get playlistCreate;
+
+  /// Playlist name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Name'**
+  String get playlistName;
+
+  /// Playlist description field label
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get playlistDescription;
+
+  /// Shown when no playlists exist
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists yet. Create one to get started.'**
+  String get playlistEmpty;
+
+  /// Delete playlist action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Playlist'**
+  String get playlistDelete;
+
+  /// Confirm playlist deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? This cannot be undone.'**
+  String playlistDeleteConfirm(String name);
+
+  /// Rename playlist action
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get playlistRename;
+
+  /// Cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Create button
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// Delete button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Save button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Context menu: add track to playlist
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Playlist'**
+  String get contextAddToPlaylist;
+
+  /// Shown when search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get searchNoResults;
 }
 
 class _AppLocalizationsDelegate

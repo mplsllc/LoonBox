@@ -190,14 +190,32 @@ class NowPlayingBar extends ConsumerWidget {
                     ),
                   ),
                   // Volume
+                  IconButton(
+                    icon: Icon(
+                      playback.isMuted || playback.volume == 0
+                          ? Icons.volume_off
+                          : playback.volume < 0.5
+                              ? Icons.volume_down
+                              : Icons.volume_up,
+                    ),
+                    iconSize: 20,
+                    onPressed: () {
+                      final notifier = ref.read(playbackStateProvider.notifier);
+                      notifier.toggleMute();
+                      audio.setVolume(playback.isMuted ? playback.volume : 0.0);
+                    },
+                    tooltip: l10n.playerVolume,
+                  ),
                   Semantics(
                     label: l10n.playerVolume,
                     child: SizedBox(
-                      width: 120,
+                      width: 100,
                       child: Slider(
-                        value: playback.volume,
+                        value: playback.isMuted ? 0 : playback.volume,
                         onChanged: (v) {
-                          ref.read(playbackStateProvider.notifier).setVolume(v);
+                          final notifier = ref.read(playbackStateProvider.notifier);
+                          if (playback.isMuted) notifier.toggleMute();
+                          notifier.setVolume(v);
                           audio.setVolume(v);
                         },
                       ),

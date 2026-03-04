@@ -248,4 +248,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playAll => 'Play All';
+
+  @override
+  String get playlistCreate => 'New Playlist';
+
+  @override
+  String get playlistName => 'Playlist Name';
+
+  @override
+  String get playlistDescription => 'Description (optional)';
+
+  @override
+  String get playlistEmpty => 'No playlists yet. Create one to get started.';
+
+  @override
+  String get playlistDelete => 'Delete Playlist';
+
+  @override
+  String playlistDeleteConfirm(String name) {
+    return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String get playlistRename => 'Rename';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get contextAddToPlaylist => 'Add to Playlist';
+
+  @override
+  String get searchNoResults => 'No results found';
 }

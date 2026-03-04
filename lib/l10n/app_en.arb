@@ -184,5 +184,37 @@
     }
   },
   "playAll": "Play All",
-  "@playAll": { "description": "Play all tracks button" }
+  "@playAll": { "description": "Play all tracks button" },
+
+  "playlistCreate": "New Playlist",
+  "@playlistCreate": { "description": "Create new playlist button" },
+  "playlistName": "Playlist Name",
+  "@playlistName": { "description": "Playlist name field label" },
+  "playlistDescription": "Description (optional)",
+  "@playlistDescription": { "description": "Playlist description field label" },
+  "playlistEmpty": "No playlists yet. Create one to get started.",
+  "@playlistEmpty": { "description": "Shown when no playlists exist" },
+  "playlistDelete": "Delete Playlist",
+  "@playlistDelete": { "description": "Delete playlist action" },
+  "playlistDeleteConfirm": "Delete \"{name}\"? This cannot be undone.",
+  "@playlistDeleteConfirm": {
+    "description": "Confirm playlist deletion",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playlistRename": "Rename",
+  "@playlistRename": { "description": "Rename playlist action" },
+  "cancel": "Cancel",
+  "@cancel": { "description": "Cancel button" },
+  "create": "Create",
+  "@create": { "description": "Create button" },
+  "delete": "Delete",
+  "@delete": { "description": "Delete button" },
+  "save": "Save",
+  "@save": { "description": "Save button" },
+  "contextAddToPlaylist": "Add to Playlist",
+  "@contextAddToPlaylist": { "description": "Context menu: add track to playlist" },
+  "searchNoResults": "No results found",
+  "@searchNoResults": { "description": "Shown when search returns no results" }
 }

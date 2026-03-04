@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
+import '../widgets/add_to_playlist_dialog.dart';
 import 'album_detail_page.dart';
 import 'artist_detail_page.dart';
 
@@ -195,6 +196,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
       items: [
         PopupMenuItem(value: 'play_next', child: Text(l10n.contextPlayNext)),
         PopupMenuItem(value: 'play_later', child: Text(l10n.contextPlayLater)),
+        PopupMenuItem(value: 'add_playlist', child: Text(l10n.contextAddToPlaylist)),
         if (track.album != null)
           PopupMenuItem(value: 'go_album', child: Text(l10n.contextGoToAlbum)),
         if (track.artist != null)
@@ -207,6 +209,10 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
           ref.read(queueProvider.notifier).playNext(track);
         case 'play_later':
           ref.read(queueProvider.notifier).playLater(track);
+        case 'add_playlist':
+          if (context.mounted) {
+            showAddToPlaylistDialog(context, ref, track);
+          }
         case 'go_album':
           final albums = await (db.select(db.albums)
                 ..where((a) => a.name.equals(track.album!)))
