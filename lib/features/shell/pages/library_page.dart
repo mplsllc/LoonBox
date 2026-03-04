@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
-import '../../../services/audio_service.dart';
+import '../../player/presentation/queue_provider.dart';
 
 /// Provider for the track list from the database.
 final trackListProvider = FutureProvider<List<Track>>((ref) async {
@@ -69,9 +69,8 @@ class LibraryPage extends ConsumerWidget {
                   ),
                 ),
                 onTap: () {
-                  if (track.filePath != null) {
-                    ref.read(audioServiceProvider).load(track.filePath!);
-                  }
+                  // Set the full library as the queue and play from this track
+                  ref.read(queueProvider.notifier).setQueue(tracks, startIndex: index);
                 },
               );
             },

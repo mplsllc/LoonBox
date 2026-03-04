@@ -5,6 +5,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../services/audio_service.dart';
 import '../domain/player_state.dart';
 import 'player_provider.dart';
+import 'queue_provider.dart';
 
 /// Persistent now-playing bar shown at the bottom of the app.
 class NowPlayingBar extends ConsumerWidget {
@@ -18,8 +19,10 @@ class NowPlayingBar extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final audio = ref.watch(audioServiceProvider);
 
+    final queue = ref.watch(queueProvider);
     final hasTrack = playback.currentTrack != null;
     final isPlaying = playback.state == PlaybackState.playing;
+    final queueTrack = queue.currentTrack;
 
     return Container(
       height: 72,
@@ -67,7 +70,7 @@ class NowPlayingBar extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                playback.currentTrack!.path.split('/').last.split('\\').last,
+                                queueTrack?.title ?? playback.currentTrack!.path.split('/').last.split('\\').last,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: textTheme.bodyMedium?.copyWith(
@@ -75,7 +78,7 @@ class NowPlayingBar extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
+                                queueTrack?.artist ?? '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: textTheme.bodySmall?.copyWith(
@@ -108,7 +111,7 @@ class NowPlayingBar extends ConsumerWidget {
                     label: l10n.playerPrevious,
                     child: IconButton(
                       icon: const Icon(Icons.skip_previous),
-                      onPressed: hasTrack ? () => audio.queuePrevious() : null,
+                      onPressed: hasTrack ? () => ref.read(queueProvider.notifier).previous() : null,
                       tooltip: l10n.playerPrevious,
                     ),
                   ),
@@ -133,7 +136,7 @@ class NowPlayingBar extends ConsumerWidget {
                     label: l10n.playerNext,
                     child: IconButton(
                       icon: const Icon(Icons.skip_next),
-                      onPressed: hasTrack ? () => audio.queueNext() : null,
+                      onPressed: hasTrack ? () => ref.read(queueProvider.notifier).next() : null,
                       tooltip: l10n.playerNext,
                     ),
                   ),

@@ -7,6 +7,7 @@ import 'pages/library_page.dart';
 import 'pages/albums_page.dart';
 import 'pages/artists_page.dart';
 import 'pages/playlists_page.dart';
+import 'pages/search_page.dart';
 import 'pages/settings_page.dart';
 
 /// The currently selected navigation index.
@@ -27,6 +28,7 @@ class AppShell extends ConsumerWidget {
       AlbumsPage(),
       ArtistsPage(),
       PlaylistsPage(),
+      SearchPage(),
       SettingsPage(),
     ];
 
@@ -64,6 +66,11 @@ class AppShell extends ConsumerWidget {
                       icon: const Icon(Icons.queue_music_outlined),
                       selectedIcon: const Icon(Icons.queue_music),
                       label: Text(l10n.navPlaylists),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.search_outlined),
+                      selectedIcon: const Icon(Icons.search),
+                      label: Text(l10n.navSearch),
                     ),
                     NavigationRailDestination(
                       icon: const Icon(Icons.settings_outlined),
