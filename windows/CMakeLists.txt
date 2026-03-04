@@ -58,6 +58,36 @@ add_subdirectory("runner")
 include(flutter/generated_plugins.cmake)
 
 
+# === Rust loonbox_bridge build ===
+set(RUST_CRATE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../rust")
+set(RUST_BRIDGE_DLL "loonbox_bridge.dll")
+
+# Pick cargo profile based on Flutter build mode
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CARGO_PROFILE "debug")
+  set(CARGO_PROFILE_FLAG "")
+else()
+  set(CARGO_PROFILE "release")
+  set(CARGO_PROFILE_FLAG "--release")
+endif()
+
+set(RUST_DLL_PATH "${RUST_CRATE_DIR}/target/${CARGO_PROFILE}/${RUST_BRIDGE_DLL}")
+
+# Find cargo — prefer CARGO_HOME, fall back to user profile
+find_program(CARGO_EXECUTABLE cargo
+  HINTS "$ENV{CARGO_HOME}/bin" "$ENV{USERPROFILE}/.cargo/bin"
+)
+if(NOT CARGO_EXECUTABLE)
+  message(FATAL_ERROR "cargo not found. Install Rust: https://rustup.rs")
+endif()
+
+add_custom_target(loonbox_bridge_build ALL
+  COMMAND "${CARGO_EXECUTABLE}" build -p loonbox_bridge ${CARGO_PROFILE_FLAG}
+  WORKING_DIRECTORY "${RUST_CRATE_DIR}"
+  COMMENT "Building Rust loonbox_bridge (${CARGO_PROFILE})"
+)
+add_dependencies(${BINARY_NAME} loonbox_bridge_build)
+
 # === Installation ===
 # Support files are copied into place next to the executable, so that it can
 # run in place. This is done instead of making a separate bundle (as on Linux)
@@ -86,6 +116,10 @@ if(PLUGIN_BUNDLED_LIBRARIES)
     DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+# Copy the Rust bridge DLL into the bundle.
+install(FILES "${RUST_DLL_PATH}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
 
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")

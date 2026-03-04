@@ -3,6 +3,7 @@
 //! Runs on the decoder thread. Reads audio files, decodes to PCM,
 //! and pushes samples into the ring buffer for the audio thread.
 
+use crate::resampler::Resampler;
 use crate::{AudioError, AudioEvent, Command, TrackInfo};
 use crossbeam_channel::{Receiver, Sender};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -168,6 +169,8 @@ struct DecoderState {
     current_track: Option<ActiveTrack>,
     sample_rate: u32,
     channels: u16,
+    output_sample_rate: u32,
+    resampler: Option<Resampler>,
     gapless_enabled: bool,
     next_track_path: Option<String>,
 }
@@ -186,6 +189,7 @@ pub fn decoder_thread(
     event_tx: Sender<AudioEvent>,
     ring: Arc<RingBuffer>,
     playing: Arc<AtomicBool>,
+    output_sample_rate: u32,
 ) {
     let mut state = DecoderState {
         cmd_rx,
@@ -196,6 +200,8 @@ pub fn decoder_thread(
         current_track: None,
         sample_rate: 0,
         channels: 0,
+        output_sample_rate,
+        resampler: None,
         gapless_enabled: true,
         next_track_path: None,
     };
@@ -374,6 +380,19 @@ fn load_track(state: &mut DecoderState, path: &str) {
     state.sample_rate = sample_rate;
     state.channels = channels;
 
+    // Initialize resampler if source rate differs from output device rate
+    if sample_rate != state.output_sample_rate && state.output_sample_rate > 0 {
+        match Resampler::new(sample_rate, state.output_sample_rate, channels as usize) {
+            Ok(r) => state.resampler = Some(r),
+            Err(e) => {
+                log::warn!("Resampler init failed, playing at native rate: {}", e);
+                state.resampler = None;
+            }
+        }
+    } else {
+        state.resampler = None;
+    }
+
     let _ = state.event_tx.send(AudioEvent::TrackLoaded(info.clone()));
 
     state.current_track = Some(ActiveTrack {
@@ -482,6 +501,19 @@ fn gapless_load_track(state: &mut DecoderState, path: &str) {
     state.sample_rate = sample_rate;
     state.channels = channels;
 
+    // Re-initialize resampler for the new track's sample rate
+    if sample_rate != state.output_sample_rate && state.output_sample_rate > 0 {
+        match Resampler::new(sample_rate, state.output_sample_rate, channels as usize) {
+            Ok(r) => state.resampler = Some(r),
+            Err(e) => {
+                log::warn!("Gapless resampler init failed: {}", e);
+                state.resampler = None;
+            }
+        }
+    } else {
+        state.resampler = None;
+    }
+
     let _ = state.event_tx.send(AudioEvent::TrackLoaded(info.clone()));
 
     state.current_track = Some(ActiveTrack {
@@ -506,6 +538,20 @@ fn decode_next_packet(state: &mut DecoderState) {
         Err(symphonia::core::errors::Error::IoError(ref e))
             if e.kind() == std::io::ErrorKind::UnexpectedEof =>
         {
+            // Flush resampler tail before transitioning
+            if let Some(ref mut resampler) = state.resampler {
+                if let Ok(tail) = resampler.flush() {
+                    let mut offset = 0;
+                    while offset < tail.len() {
+                        let written = state.ring.write(&tail[offset..]);
+                        if written == 0 {
+                            std::thread::sleep(std::time::Duration::from_millis(1));
+                        }
+                        offset += written;
+                    }
+                }
+            }
+
             // End of stream — attempt gapless transition
             let _ = state.event_tx.send(AudioEvent::TrackFinished);
 
@@ -557,12 +603,32 @@ fn decode_next_packet(state: &mut DecoderState) {
     // Convert to interleaved f32
     let mut sample_buf = SampleBuffer::<f32>::new(num_frames as u64, spec);
     sample_buf.copy_interleaved_ref(decoded);
-    let samples = sample_buf.samples();
+
+    // Resample if needed (source rate != output device rate)
+    let samples_to_write: &[f32];
+    let resampled_buf;
+    if let Some(ref mut resampler) = state.resampler {
+        match resampler.process(sample_buf.samples()) {
+            Ok(resampled) => {
+                resampled_buf = resampled;
+                samples_to_write = &resampled_buf;
+            }
+            Err(_) => {
+                // Fallback to un-resampled on error
+                samples_to_write = sample_buf.samples();
+                resampled_buf = Vec::new();
+            }
+        }
+    } else {
+        samples_to_write = sample_buf.samples();
+        resampled_buf = Vec::new();
+    }
+    let _ = &resampled_buf; // suppress unused warning
 
     // Write to ring buffer
     let mut offset = 0;
-    while offset < samples.len() {
-        let written = state.ring.write(&samples[offset..]);
+    while offset < samples_to_write.len() {
+        let written = state.ring.write(&samples_to_write[offset..]);
         if written == 0 {
             // Ring buffer full, yield
             std::thread::sleep(std::time::Duration::from_millis(1));
@@ -596,6 +662,9 @@ fn seek_to(state: &mut DecoderState, ms: u64) {
         Ok(seeked) => {
             active.decoder.reset();
             state.ring.clear();
+            if let Some(ref mut resampler) = state.resampler {
+                resampler.reset();
+            }
             let position_ms = seeked.actual_ts * 1000
                 / active.info.sample_rate as u64;
             active.samples_decoded = seeked.actual_ts;

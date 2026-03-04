@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../player/presentation/now_playing_bar.dart';
+import '../player/presentation/player_provider.dart';
 import 'pages/library_page.dart';
 import 'pages/albums_page.dart';
 import 'pages/artists_page.dart';
@@ -19,6 +20,9 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Activate the audio event listener so engine events update UI state.
+    ref.watch(audioEventListenerProvider);
+
     final navIndex = ref.watch(navIndexProvider);
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;

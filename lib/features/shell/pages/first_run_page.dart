@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,27 +58,8 @@ class _FirstRunPageState extends ConsumerState<FirstRunPage> {
   }
 
   Future<void> _pickFolder() async {
-    // Simple text input for now (file_picker to be added)
-    final controller = TextEditingController();
-    final path = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Select Music Folder'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: 'Enter folder path'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text),
-            child: const Text('Select'),
-          ),
-        ],
-      ),
+    final path = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: 'Choose Music Folder',
     );
 
     if (path == null || path.isEmpty) return;

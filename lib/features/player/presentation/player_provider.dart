@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/audio_service.dart';
 import '../domain/player_state.dart';
 import '../domain/eq_preset.dart';
 
@@ -7,6 +8,30 @@ import '../domain/eq_preset.dart';
 final playbackStateProvider = StateNotifierProvider<PlaybackStateNotifier, PlaybackSnapshot>(
   (ref) => PlaybackStateNotifier(),
 );
+
+/// Listens to the audio engine event stream and updates the playback state.
+/// Must be watched (e.g. in the app shell) to activate.
+final audioEventListenerProvider = Provider<void>((ref) {
+  final audio = ref.watch(audioServiceProvider);
+  final notifier = ref.read(playbackStateProvider.notifier);
+
+  final sub = audio.eventStream.listen((event) {
+    switch (event) {
+      case PositionEvent(:final positionMs):
+        notifier.updatePosition(positionMs);
+      case StateChangedEvent(:final state):
+        notifier.updateState(state);
+      case TrackChangedEvent(:final trackInfo):
+        notifier.updateTrack(trackInfo);
+      case PlayerErrorEvent():
+        notifier.updateState(PlaybackState.error);
+      case BufferProgressEvent():
+        break;
+    }
+  });
+
+  ref.onDispose(() => sub.cancel());
+});
 
 class PlaybackSnapshot {
   const PlaybackSnapshot({

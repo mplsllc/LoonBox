@@ -1,9 +1,11 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
 import '../../../features/library/data/library_repository.dart';
+import '../../../features/shell/pages/library_page.dart';
 import '../../../services/extension_service.dart';
 import '../../../theme/feather_engine.dart';
 import '../../../theme/loonbox_theme.dart';
@@ -26,7 +28,7 @@ class SettingsPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: OutlinedButton.icon(
-              onPressed: () => _addWatchDirectory(context, repo),
+              onPressed: () => _addWatchDirectory(context, repo, ref),
               icon: const Icon(Icons.add),
               label: Text(l10n.settingsAddDir),
             ),
@@ -38,7 +40,7 @@ class SettingsPage extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.refresh),
             title: Text(l10n.settingsRescanLibrary),
-            onTap: () => _rescan(context, repo),
+            onTap: () => _rescan(context, repo, ref),
           ),
           ListTile(
             leading: const Icon(Icons.cleaning_services),
@@ -69,47 +71,41 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _addWatchDirectory(BuildContext context, LibraryRepository repo) async {
-    // Simple text input dialog for now (file_picker package can be added later)
-    final controller = TextEditingController();
-    final path = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Watch Directory'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            hintText: 'Enter directory path',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
+  Future<void> _addWatchDirectory(BuildContext context, LibraryRepository repo, WidgetRef ref) async {
+    final path = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: 'Choose Music Folder',
     );
-    if (path != null && path.isNotEmpty) {
-      await repo.addWatchDirectory(path);
-      // Trigger initial scan
-      await for (final _ in repo.scanDirectory(path)) {
-        // Progress updates could be shown via snackbar
-      }
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Scan complete')),
-        );
-      }
+
+    if (path == null || path.isEmpty) return;
+
+    await repo.addWatchDirectory(path);
+    ref.invalidate(_watchDirsProvider);
+
+    if (!context.mounted) return;
+
+    // Show scanning progress
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Scanning $path...'), duration: const Duration(seconds: 30)),
+    );
+
+    var count = 0;
+    await for (final progress in repo.scanDirectory(path)) {
+      count = progress.scanned;
+    }
+
+    ref.invalidate(trackListProvider);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Scan complete — $count tracks found')),
+      );
     }
   }
 
-  Future<void> _rescan(BuildContext context, LibraryRepository repo) async {
+  Future<void> _rescan(BuildContext context, LibraryRepository repo, WidgetRef ref) async {
     await for (final _ in repo.rescanAll()) {}
+    ref.invalidate(trackListProvider);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Rescan complete')),
@@ -287,7 +283,7 @@ class _ExtensionsSection extends ConsumerWidget {
   }
 }
 
-final _watchDirsProvider = FutureProvider<List<WatchDirectory>>((ref) {
+final _watchDirsProvider = StreamProvider<List<WatchDirectory>>((ref) {
   final db = ref.watch(databaseProvider);
-  return db.select(db.watchDirectories).get();
+  return db.select(db.watchDirectories).watch();
 });

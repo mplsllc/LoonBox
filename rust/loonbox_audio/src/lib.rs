@@ -118,13 +118,14 @@ pub fn init_audio_system() -> Result<(AudioEngine, output::OutputHandle), AudioE
     // Start the output stream (it will output silence until playing=true)
     output_handle.start()?;
 
-    // Spawn decoder thread
+    // Spawn decoder thread with output device sample rate for resampling
     let ring_dec = ring.clone();
     let playing_dec = playing.clone();
+    let out_rate = output_handle.sample_rate;
     std::thread::Builder::new()
         .name("loonbox-decoder".into())
         .spawn(move || {
-            decoder::decoder_thread(cmd_rx, event_tx, ring_dec, playing_dec);
+            decoder::decoder_thread(cmd_rx, event_tx, ring_dec, playing_dec, out_rate);
         })
         .map_err(|e| AudioError::Pipeline(format!("Failed to spawn decoder thread: {}", e)))?;
 

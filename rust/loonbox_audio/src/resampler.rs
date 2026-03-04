@@ -1,94 +1,125 @@
 //! Sample rate conversion via rubato.
 //!
 //! Converts decoded audio to the output device's native sample rate.
-//! Uses high-quality sinc interpolation for audiophile-grade resampling.
+//! Buffers input to feed rubato in fixed-size chunks.
 
 use crate::AudioError;
 use rubato::{FftFixedIn, Resampler as RubatoResampler};
 
-/// Resampler wrapper around rubato.
+const CHUNK_SIZE: usize = 1024;
+
+/// Resampler wrapper around rubato with internal buffering.
+///
+/// Accepts variable-length interleaved input, buffers it, and processes
+/// in fixed 1024-frame chunks as required by FftFixedIn.
 pub struct Resampler {
-    inner: Option<FftFixedIn<f32>>,
-    input_rate: u32,
-    output_rate: u32,
+    inner: FftFixedIn<f32>,
     channels: usize,
-    input_buf: Vec<Vec<f32>>,
+    /// Per-channel input accumulation buffers
+    pending: Vec<Vec<f32>>,
+    /// Interleaved output accumulation
+    output_buf: Vec<f32>,
 }
 
 impl Resampler {
     pub fn new(input_rate: u32, output_rate: u32, channels: usize) -> Result<Self, AudioError> {
-        let inner = if input_rate != output_rate {
-            // chunk_size=1024 is a good default for real-time use
-            Some(
-                FftFixedIn::new(input_rate as usize, output_rate as usize, 1024, 2, channels)
-                    .map_err(|e| AudioError::Pipeline(format!("Resampler init: {}", e)))?,
-            )
-        } else {
-            None
-        };
+        let inner =
+            FftFixedIn::new(input_rate as usize, output_rate as usize, CHUNK_SIZE, 2, channels)
+                .map_err(|e| AudioError::Pipeline(format!("Resampler init: {}", e)))?;
 
         Ok(Self {
             inner,
-            input_rate,
-            output_rate,
             channels,
-            input_buf: vec![Vec::new(); channels],
+            pending: vec![Vec::with_capacity(CHUNK_SIZE * 2); channels],
+            output_buf: Vec::with_capacity(CHUNK_SIZE * 2 * channels),
         })
     }
 
-    /// Check if resampling is needed.
-    pub fn needs_resampling(&self) -> bool {
-        self.input_rate != self.output_rate
+    /// Process interleaved samples. Returns resampled interleaved output.
+    ///
+    /// Input can be any length. Samples are buffered internally and processed
+    /// in CHUNK_SIZE-frame batches. Any leftover frames are kept for the next call.
+    pub fn process(&mut self, input: &[f32]) -> Result<Vec<f32>, AudioError> {
+        // Deinterleave input into per-channel pending buffers
+        for (i, &sample) in input.iter().enumerate() {
+            self.pending[i % self.channels].push(sample);
+        }
+
+        self.output_buf.clear();
+
+        // Process complete chunks
+        while self.pending[0].len() >= CHUNK_SIZE {
+            // Extract exactly CHUNK_SIZE frames per channel
+            let chunk: Vec<Vec<f32>> = self
+                .pending
+                .iter_mut()
+                .map(|ch| ch.drain(..CHUNK_SIZE).collect())
+                .collect();
+
+            let resampled = self
+                .inner
+                .process(&chunk, None)
+                .map_err(|e| AudioError::Pipeline(format!("Resample error: {}", e)))?;
+
+            // Re-interleave into output
+            let out_frames = resampled.first().map(|c| c.len()).unwrap_or(0);
+            for frame in 0..out_frames {
+                for ch in 0..self.channels {
+                    self.output_buf.push(resampled[ch][frame]);
+                }
+            }
+        }
+
+        Ok(std::mem::take(&mut self.output_buf))
     }
 
-    /// Process interleaved samples. Returns resampled interleaved output.
-    pub fn process(&mut self, input: &[f32]) -> Result<Vec<f32>, AudioError> {
-        let resampler = match self.inner.as_mut() {
-            Some(r) => r,
-            None => return Ok(input.to_vec()), // No resampling needed
-        };
-
-        let frames = input.len() / self.channels;
-
-        // Deinterleave into per-channel buffers
-        for ch_buf in self.input_buf.iter_mut() {
-            ch_buf.clear();
-            ch_buf.reserve(frames);
-        }
-        for (i, sample) in input.iter().enumerate() {
-            self.input_buf[i % self.channels].push(*sample);
+    /// Flush any remaining buffered samples (pad with silence to fill a chunk).
+    /// Call this at end-of-track to avoid losing the tail.
+    pub fn flush(&mut self) -> Result<Vec<f32>, AudioError> {
+        let remaining = self.pending[0].len();
+        if remaining == 0 {
+            return Ok(Vec::new());
         }
 
-        // Resample
-        let resampled = resampler
-            .process(&self.input_buf, None)
-            .map_err(|e| AudioError::Pipeline(format!("Resample error: {}", e)))?;
+        // Pad each channel to CHUNK_SIZE with silence
+        for ch in self.pending.iter_mut() {
+            ch.resize(CHUNK_SIZE, 0.0);
+        }
 
-        // Re-interleave
-        let out_frames = resampled.get(0).map(|c| c.len()).unwrap_or(0);
-        let mut interleaved = Vec::with_capacity(out_frames * self.channels);
+        let chunk: Vec<Vec<f32>> = self
+            .pending
+            .iter_mut()
+            .map(|ch| ch.drain(..).collect())
+            .collect();
+
+        let resampled = self
+            .inner
+            .process(&chunk, None)
+            .map_err(|e| AudioError::Pipeline(format!("Resample flush error: {}", e)))?;
+
+        // Only take the proportion of output that corresponds to real input
+        let ratio = self.inner.output_frames_max() as f64 / CHUNK_SIZE as f64;
+        let real_out_frames = (remaining as f64 * ratio).ceil() as usize;
+        let out_frames = resampled
+            .first()
+            .map(|c| c.len().min(real_out_frames))
+            .unwrap_or(0);
+
+        let mut output = Vec::with_capacity(out_frames * self.channels);
         for frame in 0..out_frames {
             for ch in 0..self.channels {
-                interleaved.push(resampled[ch][frame]);
+                output.push(resampled[ch][frame]);
             }
         }
 
-        Ok(interleaved)
+        Ok(output)
     }
 
-    pub fn set_rates(&mut self, input: u32, output: u32) -> Result<(), AudioError> {
-        if input != self.input_rate || output != self.output_rate {
-            self.input_rate = input;
-            self.output_rate = output;
-            if input != output {
-                self.inner = Some(
-                    FftFixedIn::new(input as usize, output as usize, 1024, 2, self.channels)
-                        .map_err(|e| AudioError::Pipeline(format!("Resampler reinit: {}", e)))?,
-                );
-            } else {
-                self.inner = None;
-            }
+    /// Clear internal buffers (call on seek or track change).
+    pub fn reset(&mut self) {
+        for ch in self.pending.iter_mut() {
+            ch.clear();
         }
-        Ok(())
+        self.inner.reset();
     }
 }
