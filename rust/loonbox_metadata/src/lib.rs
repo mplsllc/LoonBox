@@ -1,8 +1,10 @@
 //! LoonBox Metadata — tag reading/writing, album art, directory scanning.
 
-pub mod reader;
-pub mod writer;
 pub mod albumart;
+pub mod reader;
+pub mod scanner;
+pub mod watcher;
+pub mod writer;
 
 use thiserror::Error;
 

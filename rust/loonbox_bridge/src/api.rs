@@ -431,8 +431,32 @@ pub fn player_preload_next(path: String) -> anyhow::Result<()> {
 pub fn metadata_read(path: String) -> anyhow::Result<TrackMetadata> {
     let meta = loonbox_metadata::reader::read_metadata(&path)
         .map_err(|e| anyhow::anyhow!("{}", e))?;
+    Ok(convert_metadata(meta))
+}
 
-    Ok(TrackMetadata {
+#[frb]
+pub fn metadata_batch_read(paths: Vec<String>) -> anyhow::Result<Vec<TrackMetadata>> {
+    let results = loonbox_metadata::reader::batch_read(&paths);
+    Ok(results.into_iter().filter_map(|r| r.ok()).map(convert_metadata).collect())
+}
+
+#[frb]
+pub fn metadata_read_album_art(path: String) -> anyhow::Result<Option<Vec<u8>>> {
+    loonbox_metadata::albumart::read_embedded_art(&path)
+        .map_err(|e| anyhow::anyhow!("{}", e))
+}
+
+/// Find file-based album art (cover.jpg, folder.png, etc.) in the same directory.
+#[frb]
+pub fn metadata_find_file_art(track_path: String) -> anyhow::Result<Option<String>> {
+    Ok(loonbox_metadata::albumart::find_file_art(&track_path))
+}
+
+// ─── Library Scanning ────────────────────────────────────────────────
+
+/// Convert loonbox_metadata::TrackMetadata to bridge TrackMetadata.
+fn convert_metadata(meta: loonbox_metadata::TrackMetadata) -> TrackMetadata {
+    TrackMetadata {
         path: meta.path,
         title: meta.title,
         artist: meta.artist,
@@ -453,46 +477,100 @@ pub fn metadata_read(path: String) -> anyhow::Result<TrackMetadata> {
         musicbrainz_artist_id: meta.musicbrainz_artist_id,
         replay_gain_track: meta.replay_gain_track,
         replay_gain_album: meta.replay_gain_album,
-    })
-}
-
-#[frb]
-pub fn metadata_batch_read(paths: Vec<String>) -> anyhow::Result<Vec<TrackMetadata>> {
-    let results = loonbox_metadata::reader::batch_read(&paths);
-    let mut out = Vec::with_capacity(results.len());
-    for r in results {
-        if let Ok(meta) = r {
-            out.push(TrackMetadata {
-                path: meta.path,
-                title: meta.title,
-                artist: meta.artist,
-                album_artist: meta.album_artist,
-                album: meta.album,
-                track_number: meta.track_number,
-                disc_number: meta.disc_number,
-                year: meta.year,
-                genre: meta.genre,
-                duration_ms: meta.duration_ms,
-                has_album_art: meta.has_album_art,
-                file_size: meta.file_size,
-                sample_rate: meta.sample_rate,
-                bit_depth: meta.bit_depth,
-                channels: meta.channels,
-                codec: meta.codec,
-                musicbrainz_track_id: meta.musicbrainz_track_id,
-                musicbrainz_artist_id: meta.musicbrainz_artist_id,
-                replay_gain_track: meta.replay_gain_track,
-                replay_gain_album: meta.replay_gain_album,
-            });
-        }
     }
-    Ok(out)
 }
 
+/// Scan a directory for audio files and return metadata + progress events.
 #[frb]
-pub fn metadata_read_album_art(path: String) -> anyhow::Result<Option<Vec<u8>>> {
-    loonbox_metadata::albumart::read_embedded_art(&path)
-        .map_err(|e| anyhow::anyhow!("{}", e))
+pub fn library_scan(path: String, recursive: bool) -> anyhow::Result<Vec<ScanEvent>> {
+    let raw = loonbox_metadata::scanner::scan_directory(&path, recursive);
+    let events = raw
+        .into_iter()
+        .map(|e| match e {
+            loonbox_metadata::ScanEvent::Found(meta) => ScanEvent::Found(convert_metadata(meta)),
+            loonbox_metadata::ScanEvent::Progress { scanned, total } => {
+                ScanEvent::Progress { scanned, total }
+            }
+            loonbox_metadata::ScanEvent::Complete { total, duration_ms } => {
+                ScanEvent::Complete { total, duration_ms }
+            }
+            loonbox_metadata::ScanEvent::Error { path, error } => {
+                ScanEvent::Error { path, error }
+            }
+        })
+        .collect();
+    Ok(events)
+}
+
+/// Fast scan: return just audio file paths without reading metadata.
+#[frb]
+pub fn library_find_files(path: String, recursive: bool) -> anyhow::Result<Vec<String>> {
+    Ok(loonbox_metadata::scanner::find_audio_files(&path, recursive))
+}
+
+// ─── File Watcher ────────────────────────────────────────────────────
+
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU32, Ordering};
+
+/// Next watcher ID counter.
+static NEXT_WATCHER_ID: AtomicU32 = AtomicU32::new(1);
+
+/// Active file watchers, keyed by watcher ID.
+static WATCHERS: Lazy<Mutex<HashMap<u32, loonbox_metadata::watcher::FileWatcher>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+
+/// Start watching a directory for file changes. Returns a watcher ID.
+#[frb]
+pub fn watcher_start(path: String, recursive: bool) -> anyhow::Result<u32> {
+    let watcher = loonbox_metadata::watcher::FileWatcher::new(&path, recursive)
+        .map_err(|e| anyhow::anyhow!("{}", e))?;
+    let id = NEXT_WATCHER_ID.fetch_add(1, Ordering::Relaxed);
+    WATCHERS.lock().insert(id, watcher);
+    Ok(id)
+}
+
+/// Stop watching a directory. Pass the ID returned by watcher_start.
+#[frb]
+pub fn watcher_stop(watcher_id: u32) -> anyhow::Result<()> {
+    let removed = WATCHERS.lock().remove(&watcher_id);
+    if removed.is_none() {
+        return Err(anyhow::anyhow!("No watcher with ID {}", watcher_id));
+    }
+    Ok(())
+}
+
+/// Poll pending file change events from a watcher.
+#[frb]
+pub fn watcher_poll_events(watcher_id: u32) -> anyhow::Result<Vec<FileChangeEvent>> {
+    let watchers = WATCHERS.lock();
+    let watcher = watchers
+        .get(&watcher_id)
+        .ok_or_else(|| anyhow::anyhow!("No watcher with ID {}", watcher_id))?;
+
+    let raw = watcher.try_recv();
+    let events = raw
+        .into_iter()
+        .map(|e| match e {
+            loonbox_metadata::FileChangeEvent::Added(p) => FileChangeEvent::Added(p),
+            loonbox_metadata::FileChangeEvent::Removed(p) => FileChangeEvent::Removed(p),
+            loonbox_metadata::FileChangeEvent::Modified(p) => FileChangeEvent::Modified(p),
+            loonbox_metadata::FileChangeEvent::Renamed { old, new } => {
+                FileChangeEvent::Renamed {
+                    old_path: old,
+                    new_path: new,
+                }
+            }
+        })
+        .collect();
+    Ok(events)
+}
+
+/// Stop all active watchers.
+#[frb]
+pub fn watcher_stop_all() -> anyhow::Result<()> {
+    WATCHERS.lock().clear();
+    Ok(())
 }
 
 // ─── Audio Analysis ──────────────────────────────────────────────────
