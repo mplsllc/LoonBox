@@ -363,6 +363,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to Artist'**
   String get contextGoToArtist;
+
+  /// Extensions settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Extensions'**
+  String get settingsExtensions;
+
+  /// Shown when no extensions are installed
+  ///
+  /// In en, this message translates to:
+  /// **'No extensions installed.'**
+  String get extensionsNone;
+
+  /// Install extension button
+  ///
+  /// In en, this message translates to:
+  /// **'Install Extension'**
+  String get extensionsAdd;
+
+  /// Uninstall extension button
+  ///
+  /// In en, this message translates to:
+  /// **'Uninstall'**
+  String get extensionsRemove;
+
+  /// Extension permissions label
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get extensionsPermissions;
 }
 
 class _AppLocalizationsDelegate

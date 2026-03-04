@@ -7,6 +7,8 @@ use flutter_rust_bridge::frb;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 
+use std::collections::HashMap;
+
 // ─── Types ───────────────────────────────────────────────────────────
 
 #[frb]
@@ -510,7 +512,6 @@ pub fn library_find_files(path: String, recursive: bool) -> anyhow::Result<Vec<S
 
 // ─── File Watcher ────────────────────────────────────────────────────
 
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 /// Next watcher ID counter.
@@ -595,4 +596,135 @@ pub fn analyze_bpm(_path: String) -> anyhow::Result<f32> {
 pub fn generate_waveform(_path: String, _samples: u32) -> anyhow::Result<Vec<f32>> {
     // TODO: Implement waveform generation
     Ok(vec![0.0; 200])
+}
+
+// ─── Extensions ──────────────────────────────────────────────────────
+
+static EXTENSIONS: Lazy<Mutex<HashMap<String, loonbox_extensions::runtime::ExtensionInstance>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+
+#[frb]
+#[derive(Debug, Clone)]
+pub struct ExtensionInfo {
+    pub id: String,
+    pub name: String,
+    pub version: String,
+    pub description: String,
+    pub author: String,
+    pub permissions: Vec<String>,
+    pub hooks: Vec<String>,
+}
+
+/// Load an extension from a directory path.
+#[frb]
+pub fn extension_load(path: String) -> anyhow::Result<ExtensionInfo> {
+    let instance = loonbox_extensions::runtime::ExtensionInstance::load(std::path::Path::new(&path))
+        .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+    let info = ExtensionInfo {
+        id: instance.manifest.id.clone(),
+        name: instance.manifest.name.clone(),
+        version: instance.manifest.version.clone(),
+        description: instance.manifest.description.clone().unwrap_or_default(),
+        author: instance.manifest.author.clone().unwrap_or_default(),
+        permissions: instance.manifest.permissions.clone(),
+        hooks: instance.manifest.hooks.clone().unwrap_or_default(),
+    };
+
+    EXTENSIONS.lock().insert(info.id.clone(), instance);
+    Ok(info)
+}
+
+/// Unload an extension by ID.
+#[frb]
+pub fn extension_unload(id: String) -> anyhow::Result<()> {
+    EXTENSIONS.lock().remove(&id);
+    Ok(())
+}
+
+/// List all loaded extension IDs.
+#[frb]
+pub fn extension_list() -> Vec<String> {
+    EXTENSIONS.lock().keys().cloned().collect()
+}
+
+/// Dispatch a Call (event hook) to all loaded extensions.
+#[frb]
+pub fn extension_dispatch_call(call_name: String, args_json: String) -> anyhow::Result<Vec<String>> {
+    let args: serde_json::Value = serde_json::from_str(&args_json)
+        .unwrap_or(serde_json::Value::Null);
+
+    let call = match call_name.as_str() {
+        "on_track_change" => loonbox_extensions::runtime::ExtensionCall::TrackChange {
+            title: args["title"].as_str().unwrap_or("").to_string(),
+            artist: args["artist"].as_str().unwrap_or("").to_string(),
+            album: args["album"].as_str().unwrap_or("").to_string(),
+            file_path: args["file_path"].as_str().unwrap_or("").to_string(),
+            duration_ms: args["duration_ms"].as_u64().unwrap_or(0),
+        },
+        "on_playback_start" => loonbox_extensions::runtime::ExtensionCall::PlaybackStart,
+        "on_playback_stop" => loonbox_extensions::runtime::ExtensionCall::PlaybackStop,
+        "on_track_end" => loonbox_extensions::runtime::ExtensionCall::TrackEnd {
+            title: args["title"].as_str().unwrap_or("").to_string(),
+            artist: args["artist"].as_str().unwrap_or("").to_string(),
+            album: args["album"].as_str().unwrap_or("").to_string(),
+            duration_ms: args["duration_ms"].as_u64().unwrap_or(0),
+            played_ms: args["played_ms"].as_u64().unwrap_or(0),
+        },
+        "on_library_scan_complete" => loonbox_extensions::runtime::ExtensionCall::LibraryScanComplete {
+            total: args["total"].as_u64().unwrap_or(0),
+        },
+        "on_app_start" => loonbox_extensions::runtime::ExtensionCall::AppStart,
+        "on_app_exit" => loonbox_extensions::runtime::ExtensionCall::AppExit,
+        _ => return Err(anyhow::anyhow!("Unknown call: {}", call_name)),
+    };
+
+    let extensions = EXTENSIONS.lock();
+    let mut results = Vec::new();
+    for instance in extensions.values() {
+        if let Ok(Some(result)) = instance.dispatch_call(&call) {
+            results.push(result);
+        }
+    }
+    Ok(results)
+}
+
+/// Call a specific function in a specific extension.
+#[frb]
+pub fn extension_call_function(
+    extension_id: String,
+    function_name: String,
+    args_json: String,
+) -> anyhow::Result<String> {
+    let extensions = EXTENSIONS.lock();
+    let instance = extensions
+        .get(&extension_id)
+        .ok_or_else(|| anyhow::anyhow!("Extension '{}' not loaded", extension_id))?;
+    instance
+        .call_function(&function_name, &args_json)
+        .map_err(|e| anyhow::anyhow!("{}", e))
+}
+
+/// Get an extension's storage contents (for persisting to DB).
+#[frb]
+pub fn extension_get_storage(extension_id: String) -> anyhow::Result<Vec<(String, String)>> {
+    let extensions = EXTENSIONS.lock();
+    let instance = extensions
+        .get(&extension_id)
+        .ok_or_else(|| anyhow::anyhow!("Extension '{}' not loaded", extension_id))?;
+    Ok(instance.get_storage().into_iter().collect())
+}
+
+/// Restore an extension's storage from DB data.
+#[frb]
+pub fn extension_set_storage(
+    extension_id: String,
+    data: Vec<(String, String)>,
+) -> anyhow::Result<()> {
+    let extensions = EXTENSIONS.lock();
+    let instance = extensions
+        .get(&extension_id)
+        .ok_or_else(|| anyhow::anyhow!("Extension '{}' not loaded", extension_id))?;
+    instance.set_storage(data.into_iter().collect());
+    Ok(())
 }

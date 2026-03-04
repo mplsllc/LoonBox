@@ -147,4 +147,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contextGoToArtist => 'Go to Artist';
+
+  @override
+  String get settingsExtensions => 'Extensions';
+
+  @override
+  String get extensionsNone => 'No extensions installed.';
+
+  @override
+  String get extensionsAdd => 'Install Extension';
+
+  @override
+  String get extensionsRemove => 'Uninstall';
+
+  @override
+  String get extensionsPermissions => 'Permissions';
 }

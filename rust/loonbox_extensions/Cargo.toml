@@ -5,8 +5,7 @@ edition = "2021"
 description = "LoonBox extension runtime — Lua and WASM plugin hosting"
 
 [dependencies]
-# mlua for Lua scripting (v1)
-# mlua = { version = "0.9", features = ["lua54", "vendored", "async", "serialize"] }
+mlua = { version = "0.10", features = ["lua54", "vendored", "serialize", "send"] }
 # wasmtime for WASM extensions (v2)
 # wasmtime = "25"
 log = "0.4"

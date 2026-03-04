@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
 import '../../../features/library/data/library_repository.dart';
+import '../../../services/extension_service.dart';
 import '../../../theme/feather_engine.dart';
 import '../../../theme/loonbox_theme.dart';
 
@@ -49,6 +50,11 @@ class SettingsPage extends ConsumerWidget {
           // Plumage — feather switcher
           _SectionHeader(title: l10n.settingsFeathers),
           _PlumageSection(),
+          const SizedBox(height: 16),
+
+          // Extensions
+          _SectionHeader(title: l10n.settingsExtensions),
+          _ExtensionsSection(),
           const SizedBox(height: 16),
 
           // About
@@ -241,6 +247,42 @@ class _PlumageSection extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _ExtensionsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final extService = ref.watch(extensionServiceProvider);
+    final extensions = extService.installedExtensions;
+
+    if (extensions.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Text(l10n.extensionsNone),
+      );
+    }
+
+    return Column(
+      children: extensions.map((ext) {
+        return ListTile(
+          leading: const Icon(Icons.extension),
+          title: Text(ext.name),
+          subtitle: Text(
+            [ext.version, if (ext.author != null) ext.author]
+                .join(' — '),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: l10n.extensionsRemove,
+            onPressed: () async {
+              await extService.unloadExtension(ext.id);
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 }

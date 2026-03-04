@@ -110,5 +110,16 @@
   "contextGoToAlbum": "Go to Album",
   "@contextGoToAlbum": { "description": "Context menu: navigate to album" },
   "contextGoToArtist": "Go to Artist",
-  "@contextGoToArtist": { "description": "Context menu: navigate to artist" }
+  "@contextGoToArtist": { "description": "Context menu: navigate to artist" },
+
+  "settingsExtensions": "Extensions",
+  "@settingsExtensions": { "description": "Extensions settings section" },
+  "extensionsNone": "No extensions installed.",
+  "@extensionsNone": { "description": "Shown when no extensions are installed" },
+  "extensionsAdd": "Install Extension",
+  "@extensionsAdd": { "description": "Install extension button" },
+  "extensionsRemove": "Uninstall",
+  "@extensionsRemove": { "description": "Uninstall extension button" },
+  "extensionsPermissions": "Permissions",
+  "@extensionsPermissions": { "description": "Extension permissions label" }
 }
