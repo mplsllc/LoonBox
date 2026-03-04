@@ -41,7 +41,7 @@ pub fn write_metadata(
     if let Some(v) = year { tag.set_year(v); }
     if let Some(v) = comment { tag.set_comment(v.to_string()); }
 
-    tag.save_to_path(path)
+    tag.save_to_path(path, lofty::config::WriteOptions::default())
         .map_err(|e| MetadataError::WriteError(e.to_string()))?;
 
     Ok(())

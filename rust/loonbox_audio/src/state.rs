@@ -1,11 +1,11 @@
 /// Playback state machine.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlayerState {
     Stopped,
     Loading,
     Playing,
     Paused,
-    Error,
+    Error(String),
 }
 
 impl std::fmt::Display for PlayerState {
@@ -15,7 +15,7 @@ impl std::fmt::Display for PlayerState {
             Self::Loading => write!(f, "loading"),
             Self::Playing => write!(f, "playing"),
             Self::Paused => write!(f, "paused"),
-            Self::Error => write!(f, "error"),
+            Self::Error(e) => write!(f, "error: {}", e),
         }
     }
 }

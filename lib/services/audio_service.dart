@@ -1,4 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../features/player/domain/player_state.dart';
+
+/// Global provider for the audio service, overridden in main.dart with the
+/// concrete [RustAudioService] instance.
+final audioServiceProvider = Provider<AudioService>(
+  (ref) => throw UnimplementedError('AudioService not initialized'),
+);
 
 /// Interface to the Rust audio engine via flutter_rust_bridge.
 ///

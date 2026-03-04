@@ -4,32 +4,100 @@
 //! RULES: Never allocate, never lock a blocking mutex, never do I/O.
 //! Read from lock-free ring buffer only.
 
+use crate::decoder::RingBuffer;
+use crate::pipeline::DspPipeline;
 use crate::AudioError;
+use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+use cpal::Stream;
+use parking_lot::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
-/// Initialize the default audio output device.
-///
-/// Full implementation will:
-/// 1. Get default output device via cpal
-/// 2. Get preferred output config (sample rate, channels)
-/// 3. Build output stream with callback that reads from ring buffer
-/// 4. Return handle to start/stop the stream
-pub fn init_output() -> Result<OutputHandle, AudioError> {
-    // TODO: Initialize cpal output
-    Ok(OutputHandle { _private: () })
-}
-
+/// Handle to the audio output stream.
 pub struct OutputHandle {
-    _private: (),
+    stream: Stream,
+    pub sample_rate: u32,
+    pub channels: u16,
 }
 
 impl OutputHandle {
     pub fn start(&self) -> Result<(), AudioError> {
-        // TODO: Start the cpal stream
-        Ok(())
+        self.stream
+            .play()
+            .map_err(|e| AudioError::Output(format!("Failed to start stream: {}", e)))
     }
 
     pub fn stop(&self) -> Result<(), AudioError> {
-        // TODO: Pause/stop the cpal stream
-        Ok(())
+        self.stream
+            .pause()
+            .map_err(|e| AudioError::Output(format!("Failed to pause stream: {}", e)))
     }
+}
+
+/// Initialize the default audio output device and create a stream.
+///
+/// The stream callback reads from the ring buffer and applies DSP processing.
+/// The `playing` flag controls whether samples are read or silence is output.
+pub fn init_output(
+    ring: Arc<RingBuffer>,
+    pipeline: Arc<Mutex<DspPipeline>>,
+    playing: Arc<AtomicBool>,
+) -> Result<OutputHandle, AudioError> {
+    let host = cpal::default_host();
+
+    let device = host
+        .default_output_device()
+        .ok_or_else(|| AudioError::Output("No output device found".into()))?;
+
+    let supported_config = device
+        .default_output_config()
+        .map_err(|e| AudioError::Output(format!("No output config: {}", e)))?;
+
+    let sample_rate = supported_config.sample_rate().0;
+    let channels = supported_config.channels();
+
+    let config = cpal::StreamConfig {
+        channels,
+        sample_rate: cpal::SampleRate(sample_rate),
+        buffer_size: cpal::BufferSize::Default,
+    };
+
+    let ring_ref = ring.clone();
+    let playing_ref = playing.clone();
+    let pipeline_ref = pipeline.clone();
+    let ch = channels as usize;
+
+    let stream = device
+        .build_output_stream(
+            &config,
+            move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+                if !playing_ref.load(Ordering::Acquire) {
+                    // Output silence when not playing
+                    data.fill(0.0);
+                    return;
+                }
+
+                let read = ring_ref.read(data);
+                if read < data.len() {
+                    // Buffer underrun — fill remaining with silence
+                    data[read..].fill(0.0);
+                }
+
+                // Apply DSP pipeline (EQ, volume, limiter)
+                if let Some(mut dsp) = pipeline_ref.try_lock() {
+                    dsp.process(&mut data[..read], ch);
+                }
+            },
+            |err| {
+                log::error!("Audio output error: {}", err);
+            },
+            None, // No timeout
+        )
+        .map_err(|e| AudioError::Output(format!("Failed to build stream: {}", e)))?;
+
+    Ok(OutputHandle {
+        stream,
+        sample_rate,
+        channels,
+    })
 }
