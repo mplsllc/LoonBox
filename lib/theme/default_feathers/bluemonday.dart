@@ -1,21 +1,16 @@
-import 'package:flutter/material.dart';
+import '../feather_manifest.dart';
 import '../loonbox_theme.dart';
 
-final blueMonday = LoonBoxFeather(
-  id: 'bluemonday',
-  name: 'Blue Monday',
-  lightTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1565C0),
-      brightness: Brightness.light,
+final blueMonday = LoonBoxFeather.fromManifest(
+  const FeatherManifest(
+    id: 'bluemonday',
+    name: 'Blue Monday',
+    version: '1.0.0',
+    description: 'Default feather — the original Nightingale look, reimagined.',
+    colors: FeatherColors(
+      primary: '#1565C0',
+      secondary: '#0D47A1',
+      tertiary: '#42A5F5',
     ),
-    useMaterial3: true,
-  ),
-  darkTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1565C0),
-      brightness: Brightness.dark,
-    ),
-    useMaterial3: true,
   ),
 );

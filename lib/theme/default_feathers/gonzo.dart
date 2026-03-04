@@ -1,21 +1,16 @@
-import 'package:flutter/material.dart';
+import '../feather_manifest.dart';
 import '../loonbox_theme.dart';
 
-final gonzo = LoonBoxFeather(
-  id: 'gonzo',
-  name: 'Gonzo',
-  lightTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF2E7D32),
-      brightness: Brightness.light,
+final gonzo = LoonBoxFeather.fromManifest(
+  const FeatherManifest(
+    id: 'gonzo',
+    name: 'Gonzo',
+    version: '1.0.0',
+    description: 'Deep forest greens with an earthy warmth.',
+    colors: FeatherColors(
+      primary: '#2E7D32',
+      secondary: '#1B5E20',
+      tertiary: '#81C784',
     ),
-    useMaterial3: true,
-  ),
-  darkTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF2E7D32),
-      brightness: Brightness.dark,
-    ),
-    useMaterial3: true,
   ),
 );

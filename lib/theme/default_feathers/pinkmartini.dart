@@ -1,21 +1,16 @@
-import 'package:flutter/material.dart';
+import '../feather_manifest.dart';
 import '../loonbox_theme.dart';
 
-final pinkMartini = LoonBoxFeather(
-  id: 'pinkmartini',
-  name: 'Pink Martini',
-  lightTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFFE91E63),
-      brightness: Brightness.light,
+final pinkMartini = LoonBoxFeather.fromManifest(
+  const FeatherManifest(
+    id: 'pinkmartini',
+    name: 'Pink Martini',
+    version: '1.0.0',
+    description: 'Bold and vibrant — a splash of hot pink energy.',
+    colors: FeatherColors(
+      primary: '#E91E63',
+      secondary: '#AD1457',
+      tertiary: '#F48FB1',
     ),
-    useMaterial3: true,
-  ),
-  darkTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFFE91E63),
-      brightness: Brightness.dark,
-    ),
-    useMaterial3: true,
   ),
 );

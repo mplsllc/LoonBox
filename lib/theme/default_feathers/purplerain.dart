@@ -1,21 +1,16 @@
-import 'package:flutter/material.dart';
+import '../feather_manifest.dart';
 import '../loonbox_theme.dart';
 
-final purpleRain = LoonBoxFeather(
-  id: 'purplerain',
-  name: 'Purple Rain',
-  lightTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF7B1FA2),
-      brightness: Brightness.light,
+final purpleRain = LoonBoxFeather.fromManifest(
+  const FeatherManifest(
+    id: 'purplerain',
+    name: 'Purple Rain',
+    version: '1.0.0',
+    description: 'Royal purple — let us go crazy.',
+    colors: FeatherColors(
+      primary: '#7B1FA2',
+      secondary: '#4A148C',
+      tertiary: '#CE93D8',
     ),
-    useMaterial3: true,
-  ),
-  darkTheme: ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF7B1FA2),
-      brightness: Brightness.dark,
-    ),
-    useMaterial3: true,
   ),
 );

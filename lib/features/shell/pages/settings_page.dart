@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
 import '../../../features/library/data/library_repository.dart';
+import '../../../theme/feather_engine.dart';
+import '../../../theme/loonbox_theme.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -42,6 +44,11 @@ class SettingsPage extends ConsumerWidget {
             title: Text(l10n.settingsCleanLibrary),
             onTap: () => _clean(context, repo),
           ),
+          const SizedBox(height: 16),
+
+          // Plumage — feather switcher
+          _SectionHeader(title: l10n.settingsFeathers),
+          _PlumageSection(),
           const SizedBox(height: 16),
 
           // About
@@ -163,6 +170,75 @@ class _WatchDirsList extends ConsumerWidget {
               ),
             );
           }).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _PlumageSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final feathersAsync = ref.watch(featherEngineProvider);
+    final currentFeather = ref.watch(loonBoxThemeProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return feathersAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text('Error loading feathers: $e'),
+      ),
+      data: (feathers) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: feathers.map((feather) {
+              final isSelected = feather.id == currentFeather.id;
+              final primaryColor = feather.lightTheme.colorScheme.primary;
+              return GestureDetector(
+                onTap: () {
+                  ref.read(loonBoxThemeProvider.notifier).setFeather(feather);
+                },
+                child: Semantics(
+                  label: '${feather.name} theme${isSelected ? ", selected" : ""}',
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: isSelected
+                          ? Border.all(color: colorScheme.onSurface, width: 3)
+                          : Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (isSelected)
+                          Icon(Icons.check, color: feather.lightTheme.colorScheme.onPrimary),
+                        const SizedBox(height: 4),
+                        Text(
+                          feather.name,
+                          style: TextStyle(
+                            color: feather.lightTheme.colorScheme.onPrimary,
+                            fontSize: 10,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         );
       },
     );
