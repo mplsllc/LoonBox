@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../services/media_controls_service.dart';
 import '../player/presentation/now_playing_bar.dart';
 import '../player/presentation/player_provider.dart';
+import '../player/presentation/queue_provider.dart';
 import 'pages/library_page.dart';
 import 'pages/albums_page.dart';
 import 'pages/artists_page.dart';
@@ -15,19 +17,37 @@ import 'pages/settings_page.dart';
 final navIndexProvider = StateProvider<int>((ref) => 0);
 
 /// Main app shell: sidebar + content area + persistent now-playing bar.
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  bool _mediaControlsInitialized = false;
+
+  @override
+  Widget build(BuildContext context) {
     // Activate the audio event listener so engine events update UI state.
     ref.watch(audioEventListenerProvider);
+
+    // Initialize media controls once (needs queue notifier from provider scope)
+    if (!_mediaControlsInitialized) {
+      _mediaControlsInitialized = true;
+      final mediaControls = ref.read(mediaControlsServiceProvider);
+      final queueNotifier = ref.read(queueProvider.notifier);
+      mediaControls.init(
+        () => queueNotifier.next(),
+        () => queueNotifier.previous(),
+      );
+    }
 
     final navIndex = ref.watch(navIndexProvider);
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final pages = const [
+    const pages = [
       LibraryPage(),
       AlbumsPage(),
       ArtistsPage(),

@@ -106,39 +106,44 @@ class AlbumDetailPage extends ConsumerWidget {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final track = tracks[index];
-                    return ListTile(
-                      leading: SizedBox(
-                        width: 32,
-                        child: Text(
-                          track.trackNumber?.toString() ?? '–',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodyMedium?.copyWith(
+                    return GestureDetector(
+                      onSecondaryTapUp: (details) {
+                        _showContextMenu(context, ref, details.globalPosition, track);
+                      },
+                      child: ListTile(
+                        leading: SizedBox(
+                          width: 32,
+                          child: Text(
+                            track.trackNumber?.toString() ?? '–',
+                            textAlign: TextAlign.center,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          track.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: track.artist != null
+                            ? Text(
+                                track.artist!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.bodySmall,
+                              )
+                            : null,
+                        trailing: Text(
+                          _formatDuration(track.durationMs),
+                          style: textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        onTap: () {
+                          ref.read(queueProvider.notifier).setQueue(tracks, startIndex: index);
+                        },
                       ),
-                      title: Text(
-                        track.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: track.artist != null
-                          ? Text(
-                              track.artist!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.bodySmall,
-                            )
-                          : null,
-                      trailing: Text(
-                        _formatDuration(track.durationMs),
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      onTap: () {
-                        ref.read(queueProvider.notifier).setQueue(tracks, startIndex: index);
-                      },
                     );
                   },
                   childCount: tracks.length,
@@ -149,6 +154,26 @@ class AlbumDetailPage extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  void _showContextMenu(BuildContext context, WidgetRef ref, Offset position, Track track) {
+    final l10n = AppLocalizations.of(context)!;
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
+      items: [
+        PopupMenuItem(value: 'play_next', child: Text(l10n.contextPlayNext)),
+        PopupMenuItem(value: 'play_later', child: Text(l10n.contextPlayLater)),
+      ],
+    ).then((value) {
+      if (value == null) return;
+      switch (value) {
+        case 'play_next':
+          ref.read(queueProvider.notifier).playNext(track);
+        case 'play_later':
+          ref.read(queueProvider.notifier).playLater(track);
+      }
+    });
   }
 
   String _formatDuration(int? ms) {

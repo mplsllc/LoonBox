@@ -167,5 +167,12 @@
   "nowPlayingTitle": "Now Playing",
   "@nowPlayingTitle": { "description": "Now playing full view title" },
   "upNext": "Up Next",
-  "@upNext": { "description": "Up next section in now playing view" }
+  "@upNext": { "description": "Up next section in now playing view" },
+
+  "settingsEqualizer": "Equalizer",
+  "@settingsEqualizer": { "description": "Equalizer settings section" },
+  "eqEnabled": "Equalizer Enabled",
+  "@eqEnabled": { "description": "EQ toggle label" },
+  "eqPreset": "Preset",
+  "@eqPreset": { "description": "EQ preset dropdown label" }
 }

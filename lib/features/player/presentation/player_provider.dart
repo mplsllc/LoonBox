@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/audio_service.dart';
+import '../../../services/media_controls_service.dart';
 import '../domain/player_state.dart';
 import '../domain/eq_preset.dart';
+import 'queue_provider.dart';
 
 /// Current playback state.
 final playbackStateProvider = StateNotifierProvider<PlaybackStateNotifier, PlaybackSnapshot>(
@@ -10,19 +12,32 @@ final playbackStateProvider = StateNotifierProvider<PlaybackStateNotifier, Playb
 );
 
 /// Listens to the audio engine event stream and updates the playback state.
+/// Also keeps OS media controls (SMTC) in sync.
 /// Must be watched (e.g. in the app shell) to activate.
 final audioEventListenerProvider = Provider<void>((ref) {
   final audio = ref.watch(audioServiceProvider);
   final notifier = ref.read(playbackStateProvider.notifier);
+  final mediaControls = ref.watch(mediaControlsServiceProvider);
 
   final sub = audio.eventStream.listen((event) {
     switch (event) {
       case PositionEvent(:final positionMs):
         notifier.updatePosition(positionMs);
+        final durationMs = ref.read(playbackStateProvider).durationMs;
+        mediaControls.updatePosition(positionMs, durationMs);
       case StateChangedEvent(:final state):
         notifier.updateState(state);
+        mediaControls.updatePlaybackState(state);
       case TrackChangedEvent(:final trackInfo):
         notifier.updateTrack(trackInfo);
+        final queueTrack = ref.read(queueProvider).currentTrack;
+        mediaControls.updateTrack(
+          title: queueTrack?.title ?? trackInfo.path.split('/').last.split('\\').last,
+          artist: queueTrack?.artist,
+          album: queueTrack?.album,
+          filePath: trackInfo.path,
+          durationMs: trackInfo.durationMs,
+        );
       case PlayerErrorEvent():
         notifier.updateState(PlaybackState.error);
       case BufferProgressEvent():

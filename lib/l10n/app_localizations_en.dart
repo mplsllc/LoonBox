@@ -225,4 +225,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upNext => 'Up Next';
+
+  @override
+  String get settingsEqualizer => 'Equalizer';
+
+  @override
+  String get eqEnabled => 'Equalizer Enabled';
+
+  @override
+  String get eqPreset => 'Preset';
 }

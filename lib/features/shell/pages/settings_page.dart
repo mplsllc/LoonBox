@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
-import '../../../database/database.dart';
+import '../../../database/database.dart' hide EqPreset;
 import '../../../features/library/data/library_repository.dart';
 import '../../../features/shell/pages/library_page.dart';
+import '../../../services/audio_service.dart';
 import '../../../services/extension_service.dart';
 import '../../../theme/feather_engine.dart';
 import '../../../theme/loonbox_theme.dart';
+import '../../player/domain/eq_preset.dart';
+import '../../player/presentation/player_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -47,6 +50,11 @@ class SettingsPage extends ConsumerWidget {
             title: Text(l10n.settingsCleanLibrary),
             onTap: () => _clean(context, repo),
           ),
+          const SizedBox(height: 16),
+
+          // Equalizer
+          _SectionHeader(title: l10n.settingsEqualizer),
+          const _EqualizerSection(),
           const SizedBox(height: 16),
 
           // Plumage — feather switcher
@@ -174,6 +182,116 @@ class _WatchDirsList extends ConsumerWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+const _eqBandLabels = [
+  '32', '64', '125', '250', '500', '1k', '2k', '4k', '8k', '16k',
+];
+
+class _EqualizerSection extends ConsumerWidget {
+  const _EqualizerSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final eqEnabled = ref.watch(eqEnabledProvider);
+    final currentPreset = ref.watch(eqPresetProvider);
+    final audio = ref.watch(audioServiceProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Enable toggle + preset selector row
+          Row(
+            children: [
+              Switch(
+                value: eqEnabled,
+                onChanged: (v) {
+                  ref.read(eqEnabledProvider.notifier).state = v;
+                  if (v) {
+                    audio.setEq(currentPreset.bands);
+                  } else {
+                    audio.setEq(List.filled(10, 0.0));
+                  }
+                },
+              ),
+              const SizedBox(width: 8),
+              Text(l10n.eqEnabled),
+              const Spacer(),
+              SizedBox(
+                width: 180,
+                child: DropdownButtonFormField<String>(
+                  initialValue: currentPreset.name,
+                  decoration: InputDecoration(
+                    labelText: l10n.eqPreset,
+                    isDense: true,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: EqPreset.builtInPresets.map((p) {
+                    return DropdownMenuItem(value: p.name, child: Text(p.name));
+                  }).toList(),
+                  onChanged: eqEnabled
+                      ? (name) {
+                          if (name == null) return;
+                          final preset = EqPreset.builtInPresets.firstWhere((p) => p.name == name);
+                          ref.read(eqPresetProvider.notifier).state = preset;
+                          audio.setEq(preset.bands);
+                        }
+                      : null,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Band sliders
+          if (eqEnabled)
+            SizedBox(
+              height: 160,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(10, (i) {
+                  return Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: Slider(
+                              value: currentPreset.bands[i],
+                              min: -1.0,
+                              max: 1.0,
+                              onChanged: (v) {
+                                final newBands = List<double>.from(currentPreset.bands);
+                                newBands[i] = v;
+                                final updated = EqPreset(
+                                    name: currentPreset.name,
+                                    bands: newBands,
+                                  );
+                                ref.read(eqPresetProvider.notifier).state = updated;
+                                audio.setEq(newBands);
+                              },
+                            ),
+                          ),
+                        ),
+                        Text(
+                          _eqBandLabels[i],
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

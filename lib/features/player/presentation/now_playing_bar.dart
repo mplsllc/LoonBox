@@ -36,15 +36,27 @@ class NowPlayingBar extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          // Seek progress bar
+          // Interactive seek bar
           if (hasTrack && playback.durationMs > 0)
-            LinearProgressIndicator(
-              value: playback.positionMs / playback.durationMs,
-              minHeight: 2,
-              backgroundColor: colorScheme.surfaceContainerHighest,
+            SizedBox(
+              height: 4,
+              child: SliderTheme(
+                data: SliderThemeData(
+                  trackHeight: 2,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0),
+                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 8),
+                  activeTrackColor: colorScheme.primary,
+                  inactiveTrackColor: colorScheme.surfaceContainerHighest,
+                ),
+                child: Slider(
+                  value: playback.positionMs.toDouble().clamp(0, playback.durationMs.toDouble()),
+                  max: playback.durationMs.toDouble(),
+                  onChanged: (v) => audio.seek(v.toInt()),
+                ),
+              ),
             )
           else
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

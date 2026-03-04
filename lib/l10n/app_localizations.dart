@@ -471,6 +471,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Up Next'**
   String get upNext;
+
+  /// Equalizer settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Equalizer'**
+  String get settingsEqualizer;
+
+  /// EQ toggle label
+  ///
+  /// In en, this message translates to:
+  /// **'Equalizer Enabled'**
+  String get eqEnabled;
+
+  /// EQ preset dropdown label
+  ///
+  /// In en, this message translates to:
+  /// **'Preset'**
+  String get eqPreset;
 }
 
 class _AppLocalizationsDelegate
