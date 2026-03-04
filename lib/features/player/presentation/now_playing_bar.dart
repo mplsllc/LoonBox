@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../services/audio_service.dart';
 import '../domain/player_state.dart';
+import 'album_art_widget.dart';
+import 'now_playing_page.dart';
 import 'player_provider.dart';
 import 'queue_provider.dart';
 
@@ -48,51 +50,56 @@ class NowPlayingBar extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  // Album art placeholder
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Icon(
-                      Icons.music_note,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Track info
+                  // Album art placeholder + track info (tappable to open full view)
                   Expanded(
-                    child: hasTrack
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                queueTrack?.title ?? playback.currentTrack!.path.split('/').last.split('\\').last,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                queueTrack?.artist ?? '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Text(
-                            l10n.playerNoTrack,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                    child: GestureDetector(
+                      onTap: hasTrack
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const NowPlayingPage()),
+                              )
+                          : null,
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+                          AlbumArtWidget(
+                            trackPath: playback.currentTrack?.path,
+                            size: 48,
                           ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: hasTrack
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        queueTrack?.title ?? playback.currentTrack!.path.split('/').last.split('\\').last,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        queueTrack?.artist ?? '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    l10n.playerNoTrack,
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   // Position / duration
                   if (hasTrack)
@@ -106,6 +113,19 @@ class NowPlayingBar extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  // Shuffle
+                  Semantics(
+                    label: queue.isShuffled ? l10n.playerShuffleOn : l10n.playerShuffleOff,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.shuffle,
+                        color: queue.isShuffled ? colorScheme.primary : null,
+                      ),
+                      iconSize: 20,
+                      onPressed: hasTrack ? () => ref.read(queueProvider.notifier).toggleShuffle() : null,
+                      tooltip: l10n.playerShuffle,
+                    ),
+                  ),
                   // Transport controls
                   Semantics(
                     label: l10n.playerPrevious,
@@ -138,6 +158,23 @@ class NowPlayingBar extends ConsumerWidget {
                       icon: const Icon(Icons.skip_next),
                       onPressed: hasTrack ? () => ref.read(queueProvider.notifier).next() : null,
                       tooltip: l10n.playerNext,
+                    ),
+                  ),
+                  // Repeat
+                  Semantics(
+                    label: switch (playback.repeat) {
+                      RepeatMode.off => l10n.playerRepeatOff,
+                      RepeatMode.all => l10n.playerRepeatAll,
+                      RepeatMode.one => l10n.playerRepeatOne,
+                    },
+                    child: IconButton(
+                      icon: Icon(
+                        playback.repeat == RepeatMode.one ? Icons.repeat_one : Icons.repeat,
+                        color: playback.repeat != RepeatMode.off ? colorScheme.primary : null,
+                      ),
+                      iconSize: 20,
+                      onPressed: hasTrack ? () => ref.read(playbackStateProvider.notifier).cycleRepeat() : null,
+                      tooltip: l10n.playerRepeat,
                     ),
                   ),
                   // Volume

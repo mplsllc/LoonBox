@@ -47,7 +47,20 @@ class LoonBoxDatabase extends _$LoonBoxDatabase {
           await _seedEqPresets();
         },
         onUpgrade: (m, from, to) async {
-          // Future migrations go here
+          // Step-by-step migrations. Each version bump gets its own block.
+          // This ensures users upgrading from any version reach the latest schema.
+          //
+          // Example for future use (uncomment when schemaVersion bumps to 2):
+          // if (from < 2) {
+          //   await m.addColumn(tracks, tracks.someNewColumn);
+          // }
+          // if (from < 3) {
+          //   await m.createTable(someNewTable);
+          // }
+        },
+        beforeOpen: (details) async {
+          // Enable foreign keys for referential integrity
+          await customStatement('PRAGMA foreign_keys = ON');
         },
       );
 

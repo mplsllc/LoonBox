@@ -162,4 +162,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get extensionsPermissions => 'Permissions';
+
+  @override
+  String get playerRepeatOff => 'Repeat off';
+
+  @override
+  String get playerRepeatAll => 'Repeat all';
+
+  @override
+  String get playerRepeatOne => 'Repeat one';
+
+  @override
+  String get playerShuffleOn => 'Shuffle on';
+
+  @override
+  String get playerShuffleOff => 'Shuffle off';
+
+  @override
+  String get queueTitle => 'Queue';
+
+  @override
+  String get queueEmpty => 'Queue is empty';
+
+  @override
+  String get queueClear => 'Clear Queue';
+
+  @override
+  String queueTrackCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tracks',
+      one: '1 track',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String albumDetailTracks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tracks',
+      one: '1 track',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String artistAlbumCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count albums',
+      one: '1 album',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nowPlayingTitle => 'Now Playing';
+
+  @override
+  String get upNext => 'Up Next';
 }

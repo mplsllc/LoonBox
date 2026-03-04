@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart';
+import 'artist_detail_page.dart';
 
 final artistListProvider = FutureProvider<List<Artist>>((ref) async {
   final db = ref.watch(databaseProvider);
@@ -36,6 +37,11 @@ class ArtistsPage extends ConsumerWidget {
                   child: Text(artist.name.isNotEmpty ? artist.name[0].toUpperCase() : '?'),
                 ),
                 title: Text(artist.name),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => ArtistDetailPage(artist: artist),
+                  ));
+                },
               );
             },
           );

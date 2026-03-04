@@ -121,5 +121,51 @@
   "extensionsRemove": "Uninstall",
   "@extensionsRemove": { "description": "Uninstall extension button" },
   "extensionsPermissions": "Permissions",
-  "@extensionsPermissions": { "description": "Extension permissions label" }
+  "@extensionsPermissions": { "description": "Extension permissions label" },
+
+  "playerRepeatOff": "Repeat off",
+  "@playerRepeatOff": { "description": "Repeat mode: off" },
+  "playerRepeatAll": "Repeat all",
+  "@playerRepeatAll": { "description": "Repeat mode: repeat all" },
+  "playerRepeatOne": "Repeat one",
+  "@playerRepeatOne": { "description": "Repeat mode: repeat one" },
+  "playerShuffleOn": "Shuffle on",
+  "@playerShuffleOn": { "description": "Shuffle enabled" },
+  "playerShuffleOff": "Shuffle off",
+  "@playerShuffleOff": { "description": "Shuffle disabled" },
+
+  "queueTitle": "Queue",
+  "@queueTitle": { "description": "Queue panel title" },
+  "queueEmpty": "Queue is empty",
+  "@queueEmpty": { "description": "Shown when queue has no tracks" },
+  "queueClear": "Clear Queue",
+  "@queueClear": { "description": "Clear all tracks from queue" },
+  "queueTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@queueTrackCount": {
+    "description": "Track count in queue",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "albumDetailTracks": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@albumDetailTracks": {
+    "description": "Track count on album detail",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "artistAlbumCount": "{count, plural, =1{1 album} other{{count} albums}}",
+  "@artistAlbumCount": {
+    "description": "Album count on artist detail",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "nowPlayingTitle": "Now Playing",
+  "@nowPlayingTitle": { "description": "Now playing full view title" },
+  "upNext": "Up Next",
+  "@upNext": { "description": "Up next section in now playing view" }
 }

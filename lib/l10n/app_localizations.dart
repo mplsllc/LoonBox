@@ -393,6 +393,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Permissions'**
   String get extensionsPermissions;
+
+  /// Repeat mode: off
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat off'**
+  String get playerRepeatOff;
+
+  /// Repeat mode: repeat all
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat all'**
+  String get playerRepeatAll;
+
+  /// Repeat mode: repeat one
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat one'**
+  String get playerRepeatOne;
+
+  /// Shuffle enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle on'**
+  String get playerShuffleOn;
+
+  /// Shuffle disabled
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle off'**
+  String get playerShuffleOff;
+
+  /// Queue panel title
+  ///
+  /// In en, this message translates to:
+  /// **'Queue'**
+  String get queueTitle;
+
+  /// Shown when queue has no tracks
+  ///
+  /// In en, this message translates to:
+  /// **'Queue is empty'**
+  String get queueEmpty;
+
+  /// Clear all tracks from queue
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Queue'**
+  String get queueClear;
+
+  /// Track count in queue
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 track} other{{count} tracks}}'**
+  String queueTrackCount(int count);
+
+  /// Track count on album detail
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 track} other{{count} tracks}}'**
+  String albumDetailTracks(int count);
+
+  /// Album count on artist detail
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 album} other{{count} albums}}'**
+  String artistAlbumCount(int count);
+
+  /// Now playing full view title
+  ///
+  /// In en, this message translates to:
+  /// **'Now Playing'**
+  String get nowPlayingTitle;
+
+  /// Up next section in now playing view
+  ///
+  /// In en, this message translates to:
+  /// **'Up Next'**
+  String get upNext;
 }
 
 class _AppLocalizationsDelegate
