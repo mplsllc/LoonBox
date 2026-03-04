@@ -628,9 +628,10 @@ return crate::api::PlayerEvent::Position(var_field0); }
 return crate::api::PlayerEvent::StateChanged(var_field0); }
 2 => { let mut var_field0 = <crate::api::TrackInfo>::sse_decode(deserializer);
 return crate::api::PlayerEvent::TrackChanged(var_field0); }
-3 => { let mut var_field0 = <String>::sse_decode(deserializer);
+3 => { return crate::api::PlayerEvent::TrackFinished; }
+4 => { let mut var_field0 = <String>::sse_decode(deserializer);
 return crate::api::PlayerEvent::Error(var_field0); }
-4 => { let mut var_field0 = <f32>::sse_decode(deserializer);
+5 => { let mut var_field0 = <f32>::sse_decode(deserializer);
 return crate::api::PlayerEvent::BufferProgress(var_field0); }
  _ => { unimplemented!(""); }}}
                 }
@@ -910,9 +911,10 @@ crate::api::PlayerEvent::StateChanged(field0) => { [1.into_dart(),
 field0.into_into_dart().into_dart()].into_dart() }
 crate::api::PlayerEvent::TrackChanged(field0) => { [2.into_dart(),
 field0.into_into_dart().into_dart()].into_dart() }
-crate::api::PlayerEvent::Error(field0) => { [3.into_dart(),
+crate::api::PlayerEvent::TrackFinished => { [3.into_dart()].into_dart() }
+crate::api::PlayerEvent::Error(field0) => { [4.into_dart(),
 field0.into_into_dart().into_dart()].into_dart() }
-crate::api::PlayerEvent::BufferProgress(field0) => { [4.into_dart(),
+crate::api::PlayerEvent::BufferProgress(field0) => { [5.into_dart(),
 field0.into_into_dart().into_dart()].into_dart() }
  _ => { unimplemented!(""); }}
                 }
@@ -1212,9 +1214,10 @@ crate::api::PlayerEvent::StateChanged(field0) => { <i32>::sse_encode(1, serializ
  }
 crate::api::PlayerEvent::TrackChanged(field0) => { <i32>::sse_encode(2, serializer); <crate::api::TrackInfo>::sse_encode(field0, serializer);
  }
-crate::api::PlayerEvent::Error(field0) => { <i32>::sse_encode(3, serializer); <String>::sse_encode(field0, serializer);
+crate::api::PlayerEvent::TrackFinished => { <i32>::sse_encode(3, serializer);  }
+crate::api::PlayerEvent::Error(field0) => { <i32>::sse_encode(4, serializer); <String>::sse_encode(field0, serializer);
  }
-crate::api::PlayerEvent::BufferProgress(field0) => { <i32>::sse_encode(4, serializer); <f32>::sse_encode(field0, serializer);
+crate::api::PlayerEvent::BufferProgress(field0) => { <i32>::sse_encode(5, serializer); <f32>::sse_encode(field0, serializer);
  }
  _ => { unimplemented!(""); }}}
                 }

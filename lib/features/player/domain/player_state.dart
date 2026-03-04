@@ -24,6 +24,10 @@ class TrackChangedEvent extends PlayerEvent {
   final TrackInfo trackInfo;
 }
 
+class TrackFinishedEvent extends PlayerEvent {
+  const TrackFinishedEvent();
+}
+
 class PlayerErrorEvent extends PlayerEvent {
   const PlayerErrorEvent(this.message);
   final String message;

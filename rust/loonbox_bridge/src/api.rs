@@ -35,6 +35,7 @@ pub enum PlayerEvent {
     Position(u64),
     StateChanged(PlayerState),
     TrackChanged(TrackInfo),
+    TrackFinished,
     Error(String),
     BufferProgress(f32),
 }
@@ -335,7 +336,7 @@ pub fn player_poll_events() -> anyhow::Result<Vec<PlayerEvent>> {
             loonbox_audio::AudioEvent::TrackFinished => {
                 state.state = EnginePlayerState::Stopped;
                 state.position_ms = 0;
-                events.push(PlayerEvent::StateChanged(PlayerState::Stopped));
+                events.push(PlayerEvent::TrackFinished);
             }
             loonbox_audio::AudioEvent::Error(e) => {
                 events.push(PlayerEvent::Error(e));

@@ -42,6 +42,8 @@ class RustAudioService implements AudioService {
         domain.StateChangedEvent(_convertState(field0)),
       rust.PlayerEvent_TrackChanged(:final field0) =>
         domain.TrackChangedEvent(_convertTrackInfo(field0)),
+      rust.PlayerEvent_TrackFinished() =>
+        const domain.TrackFinishedEvent(),
       rust.PlayerEvent_Error(:final field0) =>
         domain.PlayerErrorEvent(field0),
       rust.PlayerEvent_BufferProgress(:final field0) =>

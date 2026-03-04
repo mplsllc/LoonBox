@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../services/audio_service.dart';
 import '../../services/media_controls_service.dart';
+import '../player/domain/player_state.dart';
 import '../player/presentation/now_playing_bar.dart';
 import '../player/presentation/player_provider.dart';
 import '../player/presentation/queue_provider.dart';
@@ -56,64 +59,113 @@ class _AppShellState extends ConsumerState<AppShell> {
       SettingsPage(),
     ];
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar
-                NavigationRail(
-                  selectedIndex: navIndex,
-                  onDestinationSelected: (index) {
-                    ref.read(navIndexProvider.notifier).state = index;
-                  },
-                  labelType: NavigationRailLabelType.all,
-                  backgroundColor: colorScheme.surfaceContainerLow,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.library_music_outlined),
-                      selectedIcon: const Icon(Icons.library_music),
-                      label: Text(l10n.navLibrary),
+    final audio = ref.watch(audioServiceProvider);
+    final playback = ref.watch(playbackStateProvider);
+    final queueNotifier = ref.read(queueProvider.notifier);
+    final volumeNotifier = ref.read(playbackStateProvider.notifier);
+
+    return CallbackShortcuts(
+      bindings: {
+        // Space: play/pause
+        const SingleActivator(LogicalKeyboardKey.space): () {
+          if (playback.state == PlaybackState.playing) {
+            audio.pause();
+          } else {
+            audio.play();
+          }
+        },
+        // Ctrl+Right: next track
+        const SingleActivator(LogicalKeyboardKey.arrowRight,
+            control: true): () {
+          queueNotifier.next();
+        },
+        // Ctrl+Left: previous track
+        const SingleActivator(LogicalKeyboardKey.arrowLeft,
+            control: true): () {
+          queueNotifier.previous();
+        },
+        // Ctrl+Up: volume up
+        const SingleActivator(LogicalKeyboardKey.arrowUp,
+            control: true): () {
+          final newVol = (playback.volume + 0.05).clamp(0.0, 1.0);
+          volumeNotifier.setVolume(newVol);
+          audio.setVolume(newVol);
+        },
+        // Ctrl+Down: volume down
+        const SingleActivator(LogicalKeyboardKey.arrowDown,
+            control: true): () {
+          final newVol = (playback.volume - 0.05).clamp(0.0, 1.0);
+          volumeNotifier.setVolume(newVol);
+          audio.setVolume(newVol);
+        },
+        // Ctrl+M: mute toggle
+        const SingleActivator(LogicalKeyboardKey.keyM, control: true): () {
+          volumeNotifier.toggleMute();
+          audio.setVolume(playback.isMuted ? playback.volume : 0.0);
+        },
+      },
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          body: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    // Sidebar
+                    NavigationRail(
+                      selectedIndex: navIndex,
+                      onDestinationSelected: (index) {
+                        ref.read(navIndexProvider.notifier).state = index;
+                      },
+                      labelType: NavigationRailLabelType.all,
+                      backgroundColor: colorScheme.surfaceContainerLow,
+                      destinations: [
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.library_music_outlined),
+                          selectedIcon: const Icon(Icons.library_music),
+                          label: Text(l10n.navLibrary),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.album_outlined),
+                          selectedIcon: const Icon(Icons.album),
+                          label: Text(l10n.navAlbums),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.person_outlined),
+                          selectedIcon: const Icon(Icons.person),
+                          label: Text(l10n.navArtists),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.queue_music_outlined),
+                          selectedIcon: const Icon(Icons.queue_music),
+                          label: Text(l10n.navPlaylists),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.search_outlined),
+                          selectedIcon: const Icon(Icons.search),
+                          label: Text(l10n.navSearch),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.settings_outlined),
+                          selectedIcon: const Icon(Icons.settings),
+                          label: Text(l10n.navSettings),
+                        ),
+                      ],
                     ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.album_outlined),
-                      selectedIcon: const Icon(Icons.album),
-                      label: Text(l10n.navAlbums),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.person_outlined),
-                      selectedIcon: const Icon(Icons.person),
-                      label: Text(l10n.navArtists),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.queue_music_outlined),
-                      selectedIcon: const Icon(Icons.queue_music),
-                      label: Text(l10n.navPlaylists),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.search_outlined),
-                      selectedIcon: const Icon(Icons.search),
-                      label: Text(l10n.navSearch),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.settings_outlined),
-                      selectedIcon: const Icon(Icons.settings),
-                      label: Text(l10n.navSettings),
+                    const VerticalDivider(width: 1, thickness: 1),
+                    // Content area
+                    Expanded(
+                      child: pages[navIndex],
                     ),
                   ],
                 ),
-                const VerticalDivider(width: 1, thickness: 1),
-                // Content area
-                Expanded(
-                  child: pages[navIndex],
-                ),
-              ],
-            ),
+              ),
+              // Now-playing bar at bottom
+              const NowPlayingBar(),
+            ],
           ),
-          // Now-playing bar at bottom
-          const NowPlayingBar(),
-        ],
+        ),
       ),
     );
   }

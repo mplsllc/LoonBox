@@ -38,6 +38,10 @@ final audioEventListenerProvider = Provider<void>((ref) {
           filePath: trackInfo.path,
           durationMs: trackInfo.durationMs,
         );
+      case TrackFinishedEvent():
+        notifier.updateState(PlaybackState.stopped);
+        // Auto-advance to next track in queue
+        ref.read(queueProvider.notifier).next();
       case PlayerErrorEvent():
         notifier.updateState(PlaybackState.error);
       case BufferProgressEvent():
