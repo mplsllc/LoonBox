@@ -1,0 +1,15 @@
+[package]
+name = "loonbox_bridge"
+version = "0.1.0"
+edition = "2021"
+description = "LoonBox FFI bridge — flutter_rust_bridge API surface"
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[dependencies]
+loonbox_audio = { path = "../loonbox_audio" }
+loonbox_metadata = { path = "../loonbox_metadata" }
+flutter_rust_bridge = "=2.9.0"
+log = "0.4"
+thiserror = "1.0"

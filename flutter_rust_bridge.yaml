@@ -1,0 +1,4 @@
+# flutter_rust_bridge v2 configuration
+rust_input: rust/loonbox_bridge/src/api.rs
+dart_output: lib/src/rust/
+rust_root: rust/loonbox_bridge/

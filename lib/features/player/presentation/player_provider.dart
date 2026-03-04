@@ -1,0 +1,92 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../domain/player_state.dart';
+import '../domain/eq_preset.dart';
+
+/// Current playback state.
+final playbackStateProvider = StateNotifierProvider<PlaybackStateNotifier, PlaybackSnapshot>(
+  (ref) => PlaybackStateNotifier(),
+);
+
+class PlaybackSnapshot {
+  const PlaybackSnapshot({
+    this.state = PlaybackState.stopped,
+    this.currentTrack,
+    this.positionMs = 0,
+    this.durationMs = 0,
+    this.volume = 1.0,
+    this.isMuted = false,
+    this.shuffle = false,
+    this.repeat = RepeatMode.off,
+    this.gapless = true,
+    this.crossfadeMs = 0,
+  });
+
+  final PlaybackState state;
+  final TrackInfo? currentTrack;
+  final int positionMs;
+  final int durationMs;
+  final double volume;
+  final bool isMuted;
+  final bool shuffle;
+  final RepeatMode repeat;
+  final bool gapless;
+  final int crossfadeMs;
+
+  PlaybackSnapshot copyWith({
+    PlaybackState? state,
+    TrackInfo? currentTrack,
+    int? positionMs,
+    int? durationMs,
+    double? volume,
+    bool? isMuted,
+    bool? shuffle,
+    RepeatMode? repeat,
+    bool? gapless,
+    int? crossfadeMs,
+  }) {
+    return PlaybackSnapshot(
+      state: state ?? this.state,
+      currentTrack: currentTrack ?? this.currentTrack,
+      positionMs: positionMs ?? this.positionMs,
+      durationMs: durationMs ?? this.durationMs,
+      volume: volume ?? this.volume,
+      isMuted: isMuted ?? this.isMuted,
+      shuffle: shuffle ?? this.shuffle,
+      repeat: repeat ?? this.repeat,
+      gapless: gapless ?? this.gapless,
+      crossfadeMs: crossfadeMs ?? this.crossfadeMs,
+    );
+  }
+}
+
+class PlaybackStateNotifier extends StateNotifier<PlaybackSnapshot> {
+  PlaybackStateNotifier() : super(const PlaybackSnapshot());
+
+  void updatePosition(int ms) => state = state.copyWith(positionMs: ms);
+  void updateState(PlaybackState s) => state = state.copyWith(state: s);
+  void updateTrack(TrackInfo t) => state = state.copyWith(
+        currentTrack: t,
+        durationMs: t.durationMs,
+        positionMs: 0,
+      );
+  void setVolume(double v) => state = state.copyWith(volume: v);
+  void toggleMute() => state = state.copyWith(isMuted: !state.isMuted);
+  void toggleShuffle() => state = state.copyWith(shuffle: !state.shuffle);
+  void cycleRepeat() {
+    final next = switch (state.repeat) {
+      RepeatMode.off => RepeatMode.all,
+      RepeatMode.all => RepeatMode.one,
+      RepeatMode.one => RepeatMode.off,
+    };
+    state = state.copyWith(repeat: next);
+  }
+}
+
+/// Current EQ preset.
+final eqPresetProvider = StateProvider<EqPreset>(
+  (ref) => EqPreset.builtInPresets.first,
+);
+
+/// EQ enabled state.
+final eqEnabledProvider = StateProvider<bool>((ref) => false);

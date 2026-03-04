@@ -1,0 +1,48 @@
+LoonBox - A modern cross-platform music player
+Copyright (C) 2026 MPLS LLC (https://mp.ls)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+The full text of the AGPL-3.0 is included in LICENSE_AGPL3.
+
+────────────────────────────────────────────────────────────────────────────────
+
+ECOSYSTEM CARVE-OUT
+
+The following are explicitly NOT considered derivative works of LoonBox and
+may be distributed under any license their authors choose:
+
+  1. Feathers (themes) — files distributed as .loonfeather packages or
+     placed in the ~/.loonbox/feathers/ directory, which customize the
+     visual appearance of LoonBox through the documented feather manifest
+     format.
+
+  2. Extensions (plugins) — files distributed as .loonext packages or
+     placed in the ~/.loonbox/extensions/ directory, which extend LoonBox
+     functionality through the documented Lua extension API.
+
+This carve-out applies only to feathers and extensions that interact with
+LoonBox solely through the documented public APIs (feather manifest format
+and Lua extension API). Code that links against, embeds, or modifies
+LoonBox internals remains subject to the AGPL-3.0.
+
+────────────────────────────────────────────────────────────────────────────────
+
+CONTRIBUTOR LICENSE AGREEMENT
+
+By submitting a contribution (pull request, patch, or other code) to this
+project, you agree to the terms of the Contributor License Agreement in
+CLA.md. In summary, you grant MPLS LLC a perpetual, worldwide,
+non-exclusive, royalty-free license to use, modify, and relicense your
+contributions. You retain copyright ownership of your contributions.
