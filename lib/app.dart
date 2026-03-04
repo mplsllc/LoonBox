@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'l10n/app_localizations.dart';
+import 'features/shell/app_shell.dart';
 import 'theme/loonbox_theme.dart';
 
 class LoonBoxApp extends ConsumerWidget {
@@ -15,11 +18,14 @@ class LoonBoxApp extends ConsumerWidget {
       theme: theme.lightTheme,
       darkTheme: theme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const Scaffold(
-        body: Center(
-          child: Text('LoonBox — Phase 1 Foundation'),
-        ),
-      ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const AppShell(),
     );
   }
 }
