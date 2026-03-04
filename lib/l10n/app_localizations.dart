@@ -489,6 +489,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preset'**
   String get eqPreset;
+
+  /// Track count shown in library header
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 track} other{{count} tracks}}'**
+  String libraryTrackCount(int count);
+
+  /// Play all tracks button
+  ///
+  /// In en, this message translates to:
+  /// **'Play All'**
+  String get playAll;
 }
 
 class _AppLocalizationsDelegate

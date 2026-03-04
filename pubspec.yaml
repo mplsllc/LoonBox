@@ -30,6 +30,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   file_picker: ^10.3.10
   smtc_windows: ^1.1.0
+  tray_manager: ^0.2.3
+  window_manager: ^0.4.3
 
 dev_dependencies:
   flutter_test:

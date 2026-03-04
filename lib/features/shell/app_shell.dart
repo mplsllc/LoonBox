@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../services/audio_service.dart';
 import '../../services/media_controls_service.dart';
+import '../../services/tray_service.dart';
 import '../player/domain/player_state.dart';
 import '../player/presentation/now_playing_bar.dart';
 import '../player/presentation/player_provider.dart';
@@ -27,23 +29,42 @@ class AppShell extends ConsumerStatefulWidget {
   ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends ConsumerState<AppShell> {
-  bool _mediaControlsInitialized = false;
+class _AppShellState extends ConsumerState<AppShell> with WindowListener {
+  bool _servicesInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowClose() async {
+    // Hide to tray instead of quitting
+    await windowManager.hide();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Activate the audio event listener so engine events update UI state.
     ref.watch(audioEventListenerProvider);
 
-    // Initialize media controls once (needs queue notifier from provider scope)
-    if (!_mediaControlsInitialized) {
-      _mediaControlsInitialized = true;
+    // Initialize media controls + tray once (needs provider scope)
+    if (!_servicesInitialized) {
+      _servicesInitialized = true;
       final mediaControls = ref.read(mediaControlsServiceProvider);
       final queueNotifier = ref.read(queueProvider.notifier);
       mediaControls.init(
         () => queueNotifier.next(),
         () => queueNotifier.previous(),
       );
+      ref.read(trayServiceProvider).init();
     }
 
     final navIndex = ref.watch(navIndexProvider);

@@ -174,5 +174,15 @@
   "eqEnabled": "Equalizer Enabled",
   "@eqEnabled": { "description": "EQ toggle label" },
   "eqPreset": "Preset",
-  "@eqPreset": { "description": "EQ preset dropdown label" }
+  "@eqPreset": { "description": "EQ preset dropdown label" },
+
+  "libraryTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@libraryTrackCount": {
+    "description": "Track count shown in library header",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "playAll": "Play All",
+  "@playAll": { "description": "Play all tracks button" }
 }

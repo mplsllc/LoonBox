@@ -234,4 +234,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eqPreset => 'Preset';
+
+  @override
+  String libraryTrackCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tracks',
+      one: '1 track',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get playAll => 'Play All';
 }
