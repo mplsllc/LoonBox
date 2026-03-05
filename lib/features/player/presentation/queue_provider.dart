@@ -189,6 +189,8 @@ class QueueNotifier extends StateNotifier<QueueState> {
   Future<void> _playCurrentTrack() async {
     final track = state.currentTrack;
     if (track?.filePath == null) return;
+    // Optimistically set playing state so UI updates immediately
+    _playbackNotifier.updateState(PlaybackState.playing);
     final info = await _audioService.load(track!.filePath!);
     _playbackNotifier.updateTrack(info);
 

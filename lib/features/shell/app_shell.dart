@@ -21,6 +21,10 @@ import 'pages/settings_page.dart';
 /// The currently selected navigation index.
 final navIndexProvider = StateProvider<int>((ref) => 0);
 
+/// GlobalKeys for each tab's nested Navigator, so detail page pushes
+/// stay inside the content area and don't cover the NowPlayingBar.
+final _navigatorKeys = List.generate(6, (_) => GlobalKey<NavigatorState>());
+
 /// Main app shell: sidebar + content area + persistent now-playing bar.
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
@@ -137,7 +141,14 @@ class _AppShellState extends ConsumerState<AppShell> with WindowListener {
                     NavigationRail(
                       selectedIndex: navIndex,
                       onDestinationSelected: (index) {
-                        ref.read(navIndexProvider.notifier).state = index;
+                        if (index == navIndex) {
+                          // Re-tap current tab → pop to root
+                          _navigatorKeys[index]
+                              .currentState
+                              ?.popUntil((route) => route.isFirst);
+                        } else {
+                          ref.read(navIndexProvider.notifier).state = index;
+                        }
                       },
                       labelType: NavigationRailLabelType.all,
                       backgroundColor: colorScheme.surfaceContainerLow,
@@ -175,9 +186,22 @@ class _AppShellState extends ConsumerState<AppShell> with WindowListener {
                       ],
                     ),
                     const VerticalDivider(width: 1, thickness: 1),
-                    // Content area
+                    // Content area — each tab has its own Navigator so
+                    // detail-page pushes stay inside the content area
+                    // and don't cover the NowPlayingBar.
                     Expanded(
-                      child: pages[navIndex],
+                      child: IndexedStack(
+                        index: navIndex,
+                        children: [
+                          for (int i = 0; i < pages.length; i++)
+                            Navigator(
+                              key: _navigatorKeys[i],
+                              onGenerateRoute: (_) => MaterialPageRoute(
+                                builder: (_) => pages[i],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
