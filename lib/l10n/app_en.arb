@@ -216,5 +216,16 @@
   "contextAddToPlaylist": "Add to Playlist",
   "@contextAddToPlaylist": { "description": "Context menu: add track to playlist" },
   "searchNoResults": "No results found",
-  "@searchNoResults": { "description": "Shown when search returns no results" }
+  "@searchNoResults": { "description": "Shown when search returns no results" },
+
+  "visualizer": "Visualizer",
+  "@visualizer": { "description": "Visualizer toggle tooltip" },
+  "visualizerSpectrum": "Spectrum",
+  "@visualizerSpectrum": { "description": "Spectrum analyzer visualizer style" },
+  "visualizerWaveform": "Waveform",
+  "@visualizerWaveform": { "description": "Waveform visualizer style" },
+  "visualizerOscilloscope": "Oscilloscope",
+  "@visualizerOscilloscope": { "description": "Oscilloscope visualizer style" },
+  "visualizerVuMeter": "VU Meter",
+  "@visualizerVuMeter": { "description": "VU meter visualizer style" }
 }

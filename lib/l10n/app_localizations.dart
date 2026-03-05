@@ -579,6 +579,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results found'**
   String get searchNoResults;
+
+  /// Visualizer toggle tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Visualizer'**
+  String get visualizer;
+
+  /// Spectrum analyzer visualizer style
+  ///
+  /// In en, this message translates to:
+  /// **'Spectrum'**
+  String get visualizerSpectrum;
+
+  /// Waveform visualizer style
+  ///
+  /// In en, this message translates to:
+  /// **'Waveform'**
+  String get visualizerWaveform;
+
+  /// Oscilloscope visualizer style
+  ///
+  /// In en, this message translates to:
+  /// **'Oscilloscope'**
+  String get visualizerOscilloscope;
+
+  /// VU meter visualizer style
+  ///
+  /// In en, this message translates to:
+  /// **'VU Meter'**
+  String get visualizerVuMeter;
 }
 
 class _AppLocalizationsDelegate

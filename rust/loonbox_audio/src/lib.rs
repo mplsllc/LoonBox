@@ -13,6 +13,7 @@ pub mod output;
 pub mod pipeline;
 pub mod resampler;
 pub mod state;
+pub mod visualizer;
 
 use crossbeam_channel::{Receiver, Sender};
 use decoder::RingBuffer;
@@ -88,6 +89,7 @@ pub struct AudioEngine {
     cmd_tx: Sender<Command>,
     event_rx: Receiver<AudioEvent>,
     pipeline: Arc<Mutex<DspPipeline>>,
+    pub visualization: Arc<visualizer::SharedVisualization>,
 }
 
 // AudioEngine only contains channels and an Arc<Mutex<DspPipeline>>, all Send+Sync.
@@ -105,9 +107,15 @@ pub fn init_audio_system() -> Result<(AudioEngine, output::OutputHandle), AudioE
     let ring = Arc::new(RingBuffer::new(RING_BUFFER_SAMPLES));
     let playing = Arc::new(AtomicBool::new(false));
     let pipeline = Arc::new(Mutex::new(DspPipeline::new()));
+    let viz = visualizer::SharedVisualization::new();
 
     // Initialize audio output (creates cpal stream)
-    let output_handle = output::init_output(ring.clone(), pipeline.clone(), playing.clone())?;
+    let output_handle = output::init_output(
+        ring.clone(),
+        pipeline.clone(),
+        playing.clone(),
+        viz.clone(),
+    )?;
 
     // Update DSP pipeline sample rate to match output device
     {
@@ -133,6 +141,7 @@ pub fn init_audio_system() -> Result<(AudioEngine, output::OutputHandle), AudioE
         cmd_tx,
         event_rx,
         pipeline,
+        visualization: viz,
     };
 
     Ok((engine, output_handle))

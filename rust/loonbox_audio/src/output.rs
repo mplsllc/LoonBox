@@ -6,6 +6,7 @@
 
 use crate::decoder::RingBuffer;
 use crate::pipeline::DspPipeline;
+use crate::visualizer::SharedVisualization;
 use crate::AudioError;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::Stream;
@@ -42,6 +43,7 @@ pub fn init_output(
     ring: Arc<RingBuffer>,
     pipeline: Arc<Mutex<DspPipeline>>,
     playing: Arc<AtomicBool>,
+    viz: Arc<SharedVisualization>,
 ) -> Result<OutputHandle, AudioError> {
     let host = cpal::default_host();
 
@@ -65,6 +67,7 @@ pub fn init_output(
     let ring_ref = ring.clone();
     let playing_ref = playing.clone();
     let pipeline_ref = pipeline.clone();
+    let viz_ref = viz.clone();
     let ch = channels as usize;
 
     let stream = device
@@ -87,6 +90,9 @@ pub fn init_output(
                 if let Some(mut dsp) = pipeline_ref.try_lock() {
                     dsp.process(&mut data[..read], ch);
                 }
+
+                // Feed post-DSP samples to visualization buffer
+                viz_ref.push_samples(&data[..read], ch);
             },
             |err| {
                 log::error!("Audio output error: {}", err);

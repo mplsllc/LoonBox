@@ -289,4 +289,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchNoResults => 'No results found';
+
+  @override
+  String get visualizer => 'Visualizer';
+
+  @override
+  String get visualizerSpectrum => 'Spectrum';
+
+  @override
+  String get visualizerWaveform => 'Waveform';
+
+  @override
+  String get visualizerOscilloscope => 'Oscilloscope';
+
+  @override
+  String get visualizerVuMeter => 'VU Meter';
 }

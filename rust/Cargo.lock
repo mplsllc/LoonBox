@@ -1473,6 +1473,7 @@ dependencies = [
  "env_logger",
  "log",
  "parking_lot",
+ "realfft",
  "rubato",
  "symphonia",
  "thiserror 1.0.69",

@@ -599,6 +599,53 @@ pub fn generate_waveform(_path: String, _samples: u32) -> anyhow::Result<Vec<f32
     Ok(vec![0.0; 200])
 }
 
+// ─── Visualization ───────────────────────────────────────────────────
+
+#[frb]
+#[derive(Debug, Clone)]
+pub struct VisualizationData {
+    /// Mono waveform samples (-1.0 to 1.0), 256 samples.
+    pub waveform: Vec<f32>,
+    /// Spectrum magnitude bins (log-frequency, 0.0 to 1.0), 64 bins.
+    pub spectrum: Vec<f32>,
+    /// Left channel peak level (0.0 to 1.0).
+    pub peak_left: f32,
+    /// Right channel peak level (0.0 to 1.0).
+    pub peak_right: f32,
+}
+
+/// Get current visualization data (waveform + spectrum + peaks).
+/// Call at ~30-60fps from Dart for smooth animation.
+#[frb]
+pub fn player_get_visualization_data() -> anyhow::Result<VisualizationData> {
+    ensure_engine()?;
+    let guard = ENGINE.lock();
+    let engine = guard
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Engine not initialized"))?;
+
+    let snap = engine.visualization.snapshot();
+    Ok(VisualizationData {
+        waveform: snap.waveform,
+        spectrum: snap.spectrum,
+        peak_left: snap.peak_left,
+        peak_right: snap.peak_right,
+    })
+}
+
+/// Enable or disable visualization data capture.
+/// Disabled by default to save CPU when not needed.
+#[frb]
+pub fn player_set_visualization_enabled(enabled: bool) -> anyhow::Result<()> {
+    ensure_engine()?;
+    let guard = ENGINE.lock();
+    let engine = guard
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Engine not initialized"))?;
+    engine.visualization.set_enabled(enabled);
+    Ok(())
+}
+
 // ─── Extensions ──────────────────────────────────────────────────────
 
 static EXTENSIONS: Lazy<Mutex<HashMap<String, loonbox_extensions::runtime::ExtensionInstance>>> =
