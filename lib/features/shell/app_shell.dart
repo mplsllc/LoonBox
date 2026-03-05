@@ -9,6 +9,7 @@ import '../../services/media_controls_service.dart';
 import '../../services/tray_service.dart';
 import '../player/domain/player_state.dart';
 import '../player/presentation/now_playing_bar.dart';
+import '../player/presentation/now_playing_page.dart';
 import '../player/presentation/player_provider.dart';
 import '../player/presentation/queue_provider.dart';
 import 'pages/library_page.dart';
@@ -20,6 +21,9 @@ import 'pages/settings_page.dart';
 
 /// The currently selected navigation index.
 final navIndexProvider = StateProvider<int>((ref) => 0);
+
+/// Whether the full Now Playing view is shown (overlays content area).
+final showNowPlayingProvider = StateProvider<bool>((ref) => false);
 
 /// GlobalKeys for each tab's nested Navigator, so detail page pushes
 /// stay inside the content area and don't cover the NowPlayingBar.
@@ -186,22 +190,16 @@ class _AppShellState extends ConsumerState<AppShell> with WindowListener {
                       ],
                     ),
                     const VerticalDivider(width: 1, thickness: 1),
-                    // Content area — each tab has its own Navigator so
-                    // detail-page pushes stay inside the content area
-                    // and don't cover the NowPlayingBar.
+                    // Content area — shows Now Playing overlay or tab content
                     Expanded(
-                      child: IndexedStack(
-                        index: navIndex,
-                        children: [
-                          for (int i = 0; i < pages.length; i++)
-                            Navigator(
-                              key: _navigatorKeys[i],
+                      child: ref.watch(showNowPlayingProvider)
+                          ? const NowPlayingPage()
+                          : Navigator(
+                              key: _navigatorKeys[navIndex],
                               onGenerateRoute: (_) => MaterialPageRoute(
-                                builder: (_) => pages[i],
+                                builder: (_) => pages[navIndex],
                               ),
                             ),
-                        ],
-                      ),
                     ),
                   ],
                 ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../services/audio_service.dart';
+import '../../shell/app_shell.dart';
 import '../domain/player_state.dart';
 import 'album_art_widget.dart';
 import 'player_provider.dart';
@@ -29,6 +30,10 @@ class NowPlayingPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => ref.read(showNowPlayingProvider.notifier).state = false,
+        ),
         title: Text(l10n.nowPlayingTitle),
         actions: [
           // Visualizer toggle

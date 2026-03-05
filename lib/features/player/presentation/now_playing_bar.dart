@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../services/audio_service.dart';
+import '../../shell/app_shell.dart';
 import '../domain/player_state.dart';
 import 'album_art_widget.dart';
-import 'now_playing_page.dart';
 import 'player_provider.dart';
 import 'queue_provider.dart';
 
@@ -66,9 +66,10 @@ class NowPlayingBar extends ConsumerWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: hasTrack
-                          ? () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const NowPlayingPage()),
-                              )
+                          ? () {
+                              final notifier = ref.read(showNowPlayingProvider.notifier);
+                              notifier.state = !notifier.state;
+                            }
                           : null,
                       behavior: HitTestBehavior.opaque,
                       child: Row(
