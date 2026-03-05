@@ -204,8 +204,9 @@ class _AppShellState extends ConsumerState<AppShell> with WindowListener {
                   ],
                 ),
               ),
-              // Now-playing bar at bottom
-              const NowPlayingBar(),
+              // Now-playing bar at bottom (hidden when full view is open)
+              if (!ref.watch(showNowPlayingProvider))
+                const NowPlayingBar(),
             ],
           ),
         ),
