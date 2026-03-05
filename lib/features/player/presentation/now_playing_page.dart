@@ -2,9 +2,7 @@ import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
-import '../../../services/audio_service.dart';
 import '../../shell/app_shell.dart';
-import '../domain/player_state.dart';
 import 'album_art_widget.dart';
 import 'player_provider.dart';
 import 'queue_provider.dart';
@@ -20,11 +18,9 @@ class NowPlayingPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final playback = ref.watch(playbackStateProvider);
     final queue = ref.watch(queueProvider);
-    final audio = ref.watch(audioServiceProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final isPlaying = playback.state == PlaybackState.playing;
     final queueTrack = queue.currentTrack;
     final vizEnabled = ref.watch(visualizationEnabledProvider);
 
@@ -138,108 +134,7 @@ class NowPlayingPage extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    const SizedBox(height: 24),
-                    // Seek slider
-                    if (playback.durationMs > 0) ...[
-                      Slider(
-                        value: playback.positionMs
-                            .toDouble()
-                            .clamp(0, playback.durationMs.toDouble()),
-                        max: playback.durationMs.toDouble(),
-                        onChanged: (v) => audio.seek(v.toInt()),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _formatTime(playback.positionMs),
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontFeatures: [
-                                  const FontFeature.tabularFigures()
-                                ],
-                              ),
-                            ),
-                            Text(
-                              _formatTime(playback.durationMs),
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontFeatures: [
-                                  const FontFeature.tabularFigures()
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 16),
-                    // Transport controls
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.shuffle,
-                            color:
-                                queue.isShuffled ? colorScheme.primary : null,
-                          ),
-                          onPressed: () =>
-                              ref.read(queueProvider.notifier).toggleShuffle(),
-                          tooltip: l10n.playerShuffle,
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.skip_previous),
-                          iconSize: 36,
-                          onPressed: () =>
-                              ref.read(queueProvider.notifier).previous(),
-                          tooltip: l10n.playerPrevious,
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: Icon(isPlaying
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_filled),
-                          iconSize: 56,
-                          onPressed: () {
-                            if (isPlaying) {
-                              audio.pause();
-                            } else {
-                              audio.play();
-                            }
-                          },
-                          tooltip: isPlaying
-                              ? l10n.playerPause
-                              : l10n.playerPlay,
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.skip_next),
-                          iconSize: 36,
-                          onPressed: () =>
-                              ref.read(queueProvider.notifier).next(),
-                          tooltip: l10n.playerNext,
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: Icon(
-                            playback.repeat == RepeatMode.one
-                                ? Icons.repeat_one
-                                : Icons.repeat,
-                            color: playback.repeat != RepeatMode.off
-                                ? colorScheme.primary
-                                : null,
-                          ),
-                          onPressed: () => ref
-                              .read(playbackStateProvider.notifier)
-                              .cycleRepeat(),
-                          tooltip: l10n.playerRepeat,
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -337,10 +232,4 @@ class NowPlayingPage extends ConsumerWidget {
     );
   }
 
-  String _formatTime(int ms) {
-    final total = Duration(milliseconds: ms);
-    final m = total.inMinutes;
-    final s = total.inSeconds.remainder(60);
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
 }
