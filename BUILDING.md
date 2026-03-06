@@ -23,7 +23,7 @@ sudo apt install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev lib
 
 ```bash
 git clone https://github.com/mplsllc/LoonBox.git
-cd LoonBox/loon_app
+cd LoonBox
 
 # Install Flutter dependencies
 flutter pub get
@@ -46,7 +46,7 @@ flutter build windows    # or linux, macos
 loon_app/
 ├── lib/                    # Flutter/Dart code
 │   ├── database/           # Drift schema, tables, migrations
-│   ├── features/           # UI features (shell, player, playlists)
+│   ├── features/           # UI features (shell, player, playlists, browser)
 │   ├── l10n/               # Localization (ARB files)
 │   ├── services/           # Audio, album art, MusicBrainz, tray, etc.
 │   ├── src/rust/           # Generated FRB bindings (do not edit)
@@ -56,6 +56,7 @@ loon_app/
 │   ├── loonbox_audio/      # Audio engine (decoder, output, DSP, EQ)
 │   ├── loonbox_metadata/   # Metadata reader/writer (lofty)
 │   ├── loonbox_bridge/     # Shared types between crates
+│   ├── loonbox_browser/    # Embedded browser proxy and adblock
 │   └── loonbox_extensions/ # Extension system (Lua, planned)
 ├── assets/                 # Icons, fonts
 ├── windows/                # Windows runner
