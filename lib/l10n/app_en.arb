@@ -1,0 +1,441 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "LoonBox",
+  "@appTitle": { "description": "The application title" },
+
+  "navHome": "Home",
+  "@navHome": { "description": "Sidebar navigation: Home" },
+  "navSongs": "Songs",
+  "@navSongs": { "description": "Sidebar navigation: Songs" },
+  "navLibrary": "Library",
+  "@navLibrary": { "description": "Sidebar navigation: Library" },
+  "navAlbums": "Albums",
+  "@navAlbums": { "description": "Sidebar navigation: Albums" },
+  "navArtists": "Artists",
+  "@navArtists": { "description": "Sidebar navigation: Artists" },
+  "navPlaylists": "Playlists",
+  "@navPlaylists": { "description": "Sidebar navigation: Playlists" },
+  "navSettings": "Settings",
+  "@navSettings": { "description": "Sidebar navigation: Settings" },
+  "navSearch": "Search",
+  "@navSearch": { "description": "Sidebar navigation: Search" },
+
+  "playerPlay": "Play",
+  "@playerPlay": { "description": "Play button label" },
+  "playerPause": "Pause",
+  "@playerPause": { "description": "Pause button label" },
+  "playerStop": "Stop",
+  "@playerStop": { "description": "Stop button label" },
+  "playerNext": "Next track",
+  "@playerNext": { "description": "Next track button label" },
+  "playerPrevious": "Previous track",
+  "@playerPrevious": { "description": "Previous track button label" },
+  "playerShuffle": "Shuffle",
+  "@playerShuffle": { "description": "Shuffle button label" },
+  "playerRepeat": "Repeat",
+  "@playerRepeat": { "description": "Repeat button label" },
+  "playerVolume": "Volume",
+  "@playerVolume": { "description": "Volume slider label" },
+  "playerNowPlaying": "Now Playing",
+  "@playerNowPlaying": { "description": "Now playing section header" },
+  "playerQueue": "Queue",
+  "@playerQueue": { "description": "Queue section header" },
+  "playerNoTrack": "No track loaded",
+  "@playerNoTrack": { "description": "Shown when no track is playing" },
+
+  "songsTitle": "Songs",
+  "@songsTitle": { "description": "Songs screen title" },
+  "libraryTitle": "Library",
+  "@libraryTitle": { "description": "Library screen title" },
+  "libraryEmpty": "Your library is empty. Add a watch directory in Settings to get started.",
+  "@libraryEmpty": { "description": "Shown when library has no tracks" },
+  "libraryScanProgress": "Scanning: {scanned} of {total}",
+  "@libraryScanProgress": {
+    "description": "Scan progress indicator",
+    "placeholders": {
+      "scanned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "libraryScanComplete": "Scan complete: {total} tracks in {seconds}s",
+  "@libraryScanComplete": {
+    "description": "Scan complete message",
+    "placeholders": {
+      "total": { "type": "int" },
+      "seconds": { "type": "String" }
+    }
+  },
+
+  "albumsTitle": "Albums",
+  "@albumsTitle": { "description": "Albums screen title" },
+  "artistsTitle": "Artists",
+  "@artistsTitle": { "description": "Artists screen title" },
+  "playlistsTitle": "Playlists",
+  "@playlistsTitle": { "description": "Playlists screen title" },
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": { "description": "Settings screen title" },
+  "settingsAudioOutput": "Audio Output",
+  "@settingsAudioOutput": { "description": "Audio output device setting" },
+  "settingsWatchDirs": "Watch Directories",
+  "@settingsWatchDirs": { "description": "Watch directories setting section" },
+  "settingsAddDir": "Add Directory",
+  "@settingsAddDir": { "description": "Add watch directory button" },
+  "settingsRemoveDir": "Remove",
+  "@settingsRemoveDir": { "description": "Remove watch directory button" },
+  "settingsRescanLibrary": "Rescan Library",
+  "@settingsRescanLibrary": { "description": "Rescan library button" },
+  "settingsCleanLibrary": "Clean Missing Tracks",
+  "@settingsCleanLibrary": { "description": "Clean missing tracks button" },
+  "settingsAbout": "About",
+  "@settingsAbout": { "description": "About section" },
+  "settingsFeathers": "Feathers",
+  "@settingsFeathers": { "description": "Theme/feather settings" },
+
+  "searchHint": "Search tracks, albums, artists...",
+  "@searchHint": { "description": "Search field placeholder" },
+
+  "trackTitle": "Title",
+  "@trackTitle": { "description": "Track column header: title" },
+  "trackArtist": "Artist",
+  "@trackArtist": { "description": "Track column header: artist" },
+  "trackAlbum": "Album",
+  "@trackAlbum": { "description": "Track column header: album" },
+  "trackDuration": "Duration",
+  "@trackDuration": { "description": "Track column header: duration" },
+  "trackGenre": "Genre",
+  "@trackGenre": { "description": "Track column header: genre" },
+  "trackYear": "Year",
+  "@trackYear": { "description": "Track column header: year" },
+
+  "contextPlayNext": "Play Next",
+  "@contextPlayNext": { "description": "Context menu: play next" },
+  "contextPlayLater": "Play Later",
+  "@contextPlayLater": { "description": "Context menu: add to end of queue" },
+  "contextGoToAlbum": "Go to Album",
+  "@contextGoToAlbum": { "description": "Context menu: navigate to album" },
+  "contextGoToArtist": "Go to Artist",
+  "@contextGoToArtist": { "description": "Context menu: navigate to artist" },
+
+  "settingsExtensions": "Extensions",
+  "@settingsExtensions": { "description": "Extensions settings section" },
+  "extensionsNone": "No extensions installed.",
+  "@extensionsNone": { "description": "Shown when no extensions are installed" },
+  "extensionsAdd": "Install Extension",
+  "@extensionsAdd": { "description": "Install extension button" },
+  "extensionsRemove": "Uninstall",
+  "@extensionsRemove": { "description": "Uninstall extension button" },
+  "extensionsPermissions": "Permissions",
+  "@extensionsPermissions": { "description": "Extension permissions label" },
+
+  "playerRepeatOff": "Repeat off",
+  "@playerRepeatOff": { "description": "Repeat mode: off" },
+  "playerRepeatAll": "Repeat all",
+  "@playerRepeatAll": { "description": "Repeat mode: repeat all" },
+  "playerRepeatOne": "Repeat one",
+  "@playerRepeatOne": { "description": "Repeat mode: repeat one" },
+  "playerShuffleOn": "Shuffle on",
+  "@playerShuffleOn": { "description": "Shuffle enabled" },
+  "playerShuffleOff": "Shuffle off",
+  "@playerShuffleOff": { "description": "Shuffle disabled" },
+
+  "queueTitle": "Queue",
+  "@queueTitle": { "description": "Queue panel title" },
+  "queueEmpty": "Queue is empty",
+  "@queueEmpty": { "description": "Shown when queue has no tracks" },
+  "queueClear": "Clear Queue",
+  "@queueClear": { "description": "Clear all tracks from queue" },
+  "queueTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@queueTrackCount": {
+    "description": "Track count in queue",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "albumDetailTracks": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@albumDetailTracks": {
+    "description": "Track count on album detail",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "artistAlbumCount": "{count, plural, =1{1 album} other{{count} albums}}",
+  "@artistAlbumCount": {
+    "description": "Album count on artist detail",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "nowPlayingTitle": "Now Playing",
+  "@nowPlayingTitle": { "description": "Now playing full view title" },
+  "upNext": "Up Next",
+  "@upNext": { "description": "Up next section in now playing view" },
+
+  "settingsEqualizer": "Equalizer",
+  "@settingsEqualizer": { "description": "Equalizer settings section" },
+  "eqEnabled": "Equalizer Enabled",
+  "@eqEnabled": { "description": "EQ toggle label" },
+  "eqPreset": "Preset",
+  "@eqPreset": { "description": "EQ preset dropdown label" },
+
+  "libraryTrackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+  "@libraryTrackCount": {
+    "description": "Track count shown in library header",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "playAll": "Play All",
+  "@playAll": { "description": "Play all tracks button" },
+
+  "playlistCreate": "New Playlist",
+  "@playlistCreate": { "description": "Create new playlist button" },
+  "playlistName": "Playlist Name",
+  "@playlistName": { "description": "Playlist name field label" },
+  "playlistDescription": "Description (optional)",
+  "@playlistDescription": { "description": "Playlist description field label" },
+  "playlistEmpty": "No playlists yet. Create one to get started.",
+  "@playlistEmpty": { "description": "Shown when no playlists exist" },
+  "playlistDelete": "Delete Playlist",
+  "@playlistDelete": { "description": "Delete playlist action" },
+  "playlistDeleteConfirm": "Delete \"{name}\"? This cannot be undone.",
+  "@playlistDeleteConfirm": {
+    "description": "Confirm playlist deletion",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playlistRename": "Rename",
+  "@playlistRename": { "description": "Rename playlist action" },
+  "cancel": "Cancel",
+  "@cancel": { "description": "Cancel button" },
+  "create": "Create",
+  "@create": { "description": "Create button" },
+  "delete": "Delete",
+  "@delete": { "description": "Delete button" },
+  "save": "Save",
+  "@save": { "description": "Save button" },
+  "contextAddToPlaylist": "Add to Playlist",
+  "@contextAddToPlaylist": { "description": "Context menu: add track to playlist" },
+  "searchNoResults": "No results found",
+  "@searchNoResults": { "description": "Shown when search returns no results" },
+
+  "visualizer": "Visualizer",
+  "@visualizer": { "description": "Visualizer toggle tooltip" },
+  "visualizerSpectrum": "Spectrum",
+  "@visualizerSpectrum": { "description": "Spectrum analyzer visualizer style" },
+  "visualizerWaveform": "Waveform",
+  "@visualizerWaveform": { "description": "Waveform visualizer style" },
+  "visualizerOscilloscope": "Oscilloscope",
+  "@visualizerOscilloscope": { "description": "Oscilloscope visualizer style" },
+  "visualizerVuMeter": "VU Meter",
+  "@visualizerVuMeter": { "description": "VU meter visualizer style" },
+
+  "contextLookUpInfo": "Look Up Info",
+  "@contextLookUpInfo": { "description": "Context menu: MusicBrainz metadata lookup" },
+  "mbLookupTitle": "MusicBrainz Lookup",
+  "@mbLookupTitle": { "description": "MusicBrainz results dialog title" },
+  "mbNoResults": "No matches found on MusicBrainz.",
+  "@mbNoResults": { "description": "Shown when MusicBrainz search returns nothing" },
+  "mbScore": "Match: {score}%",
+  "@mbScore": {
+    "description": "MusicBrainz match confidence",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "mbApply": "Apply",
+  "@mbApply": { "description": "Apply selected MusicBrainz metadata" },
+  "mbApplying": "Writing tags...",
+  "@mbApplying": { "description": "Snackbar shown while writing MusicBrainz tags" },
+  "mbApplied": "Metadata updated from MusicBrainz.",
+  "@mbApplied": { "description": "Snackbar shown after successful MB tag write" },
+  "mbApplyError": "Failed to update metadata: {error}",
+  "@mbApplyError": {
+    "description": "Snackbar shown when MB tag write fails",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "contextLookUpAlbum": "Look Up Album",
+  "@contextLookUpAlbum": { "description": "Context menu: MusicBrainz album lookup" },
+  "mbAlbumLookupTitle": "Album Lookup",
+  "@mbAlbumLookupTitle": { "description": "MusicBrainz album lookup dialog title" },
+  "mbTrackMatched": "{matched} of {total} tracks matched",
+  "@mbTrackMatched": {
+    "description": "Track matching summary in album lookup",
+    "placeholders": {
+      "matched": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "mbAlreadyTagged": "Already tagged",
+  "@mbAlreadyTagged": { "description": "Shown for tracks that already have MusicBrainz IDs" },
+  "mbAutoTagTitle": "Auto-Tag Library",
+  "@mbAutoTagTitle": { "description": "Auto-tag library page title" },
+  "mbAutoTagProgress": "Looking up {current} of {total} albums...",
+  "@mbAutoTagProgress": {
+    "description": "Auto-tag scan progress",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "mbAutoTagComplete": "Found matches for {count} albums",
+  "@mbAutoTagComplete": {
+    "description": "Auto-tag scan complete message",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mbAutoTagNoMatches": "No matches found",
+  "@mbAutoTagNoMatches": { "description": "Shown when auto-tag finds no matches" },
+  "mbAutoTagStart": "Start Scan",
+  "@mbAutoTagStart": { "description": "Start auto-tag scan button" },
+  "mbAutoTagDescription": "Scan your library and look up album metadata from MusicBrainz. You can review and accept changes before they are applied.",
+  "@mbAutoTagDescription": { "description": "Auto-tag page description" },
+  "mbAcceptAll": "Accept All",
+  "@mbAcceptAll": { "description": "Accept all matched albums in auto-tag" },
+  "mbReject": "Skip",
+  "@mbReject": { "description": "Skip/reject an album match in auto-tag" },
+  "mbAccept": "Accept",
+  "@mbAccept": { "description": "Accept a single album match in auto-tag" },
+  "mbConfidence": "Confidence: {score}%",
+  "@mbConfidence": {
+    "description": "Confidence score for album match",
+    "placeholders": { "score": { "type": "int" } }
+  },
+
+  "menuFile": "File",
+  "@menuFile": { "description": "Classic menu bar: File menu" },
+  "menuEdit": "Edit",
+  "@menuEdit": { "description": "Classic menu bar: Edit menu" },
+  "menuControls": "Controls",
+  "@menuControls": { "description": "Classic menu bar: Controls menu" },
+  "menuView": "View",
+  "@menuView": { "description": "Classic menu bar: View menu" },
+  "menuTools": "Tools",
+  "@menuTools": { "description": "Classic menu bar: Tools menu" },
+  "menuHelp": "Help",
+  "@menuHelp": { "description": "Classic menu bar: Help menu" },
+  "menuQuit": "Quit",
+  "@menuQuit": { "description": "Classic menu bar: Quit item" },
+  "menuPreferences": "Preferences",
+  "@menuPreferences": { "description": "Classic menu bar: Preferences item" },
+  "menuAbout": "About LoonBox",
+  "@menuAbout": { "description": "Classic menu bar: About item" },
+  "menuMusic": "Music",
+  "@menuMusic": { "description": "Classic sidebar: Music library item" },
+  "nothingSelected": "Nothing selected",
+  "@nothingSelected": { "description": "Classic track info bar: no track playing" },
+
+  "done": "Done",
+  "@done": { "description": "Done/OK button" },
+
+  "mbManualSearch": "Search manually",
+  "@mbManualSearch": { "description": "Button to switch to manual search in MB lookup" },
+  "mbSearchTitle": "Title",
+  "@mbSearchTitle": { "description": "Manual search field: title" },
+  "mbSearchArtist": "Artist",
+  "@mbSearchArtist": { "description": "Manual search field: artist" },
+  "mbSearch": "Search",
+  "@mbSearch": { "description": "Search button in MB lookup" },
+
+  "contextRemoveFromPlaylist": "Remove from Playlist",
+  "@contextRemoveFromPlaylist": { "description": "Context menu: remove track from playlist" },
+  "contextProperties": "Properties",
+  "@contextProperties": { "description": "Context menu: show track properties" },
+  "contextPlayAlbum": "Play Album",
+  "@contextPlayAlbum": { "description": "Context menu: play all tracks in album" },
+  "contextAddAlbumToQueue": "Add Album to Queue",
+  "@contextAddAlbumToQueue": { "description": "Context menu: add all album tracks to queue" },
+
+  "homeGreetingMorning": "Good morning",
+  "@homeGreetingMorning": { "description": "Home greeting: morning (5am-12pm)" },
+  "homeGreetingAfternoon": "Good afternoon",
+  "@homeGreetingAfternoon": { "description": "Home greeting: afternoon (12pm-5pm)" },
+  "homeGreetingEvening": "Good evening",
+  "@homeGreetingEvening": { "description": "Home greeting: evening (5pm-5am)" },
+  "homeWelcome": "Welcome to LoonBox",
+  "@homeWelcome": { "description": "Home greeting: new user with no play history" },
+
+  "homeYourListening": "Your Listening",
+  "@homeYourListening": { "description": "Insights card header" },
+  "homePrivateToYou": "Private to you",
+  "@homePrivateToYou": { "description": "Privacy label on insights card" },
+  "homeListenedAllTime": "listened all time",
+  "@homeListenedAllTime": { "description": "Label under all-time listening stat" },
+  "homeThisWeek": "this week",
+  "@homeThisWeek": { "description": "Label under weekly listening stat" },
+  "homeVsLastWeek": "{percent}% vs last week",
+  "@homeVsLastWeek": {
+    "description": "Week-over-week trend",
+    "placeholders": { "percent": { "type": "String" } }
+  },
+  "homeStreak": "day streak",
+  "@homeStreak": { "description": "Label under streak stat" },
+  "homeTopArtistMonth": "Top artist this month",
+  "@homeTopArtistMonth": { "description": "Label for top artist stat" },
+  "homeStatsTracks": "{count} tracks",
+  "@homeStatsTracks": {
+    "description": "Collection stat: tracks",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeStatsAlbums": "{count} albums",
+  "@homeStatsAlbums": {
+    "description": "Collection stat: albums",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeStatsArtists": "{count} artists",
+  "@homeStatsArtists": {
+    "description": "Collection stat: artists",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "homeRecentlyPlayed": "Recently Played",
+  "@homeRecentlyPlayed": { "description": "Section title" },
+  "homeTopAlbums": "Top Albums",
+  "@homeTopAlbums": { "description": "Section title" },
+  "homeJumpBackIn": "Jump Back In",
+  "@homeJumpBackIn": { "description": "Section title" },
+  "homeRecentlyAdded": "Recently Added",
+  "@homeRecentlyAdded": { "description": "Section title" },
+  "homeRediscover": "Rediscover",
+  "@homeRediscover": { "description": "Section title" },
+  "homeRefresh": "Refresh",
+  "@homeRefresh": { "description": "Refresh button on discover section" },
+  "homeForgotten": "You haven't listened to this in a while",
+  "@homeForgotten": { "description": "Discover reason: forgotten" },
+  "homeNeverPlayed": "Albums you've never played",
+  "@homeNeverPlayed": { "description": "Discover reason: never played" },
+  "homeFromCollection": "From your collection",
+  "@homeFromCollection": { "description": "Discover fallback label" },
+  "homePlayCount": "{count, plural, =1{1 play} other{{count} plays}}",
+  "@homePlayCount": {
+    "description": "Play count label on top albums",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "homeComingSoon": "Coming Soon",
+  "@homeComingSoon": { "description": "Coming soon badge" },
+  "homeTremolo": "Tremolo",
+  "@homeTremolo": { "description": "Tremolo store name" },
+  "homeTremoloDesc": "Discover & support artists directly",
+  "@homeTremoloDesc": { "description": "Tremolo description" },
+  "homeNest": "The Nest",
+  "@homeNest": { "description": "The Nest marketplace name" },
+  "homeNestDesc": "Feathers & extensions marketplace",
+  "@homeNestDesc": { "description": "The Nest description" },
+
+  "homeEmptyTitle": "Welcome to LoonBox",
+  "@homeEmptyTitle": { "description": "Onboarding: empty library title" },
+  "homeEmptyAddMusic": "Add your music",
+  "@homeEmptyAddMusic": { "description": "Onboarding: step 1" },
+  "homeEmptyAutoTag": "Auto-tag your library",
+  "@homeEmptyAutoTag": { "description": "Onboarding: step 2" },
+  "homeEmptyAutoTagDesc": "Let LoonBox identify and organize your music using MusicBrainz",
+  "@homeEmptyAutoTagDesc": { "description": "Onboarding: auto-tag description" },
+  "homeEmptyAutoTagDisabled": "Add music first",
+  "@homeEmptyAutoTagDisabled": { "description": "Onboarding: auto-tag disabled tooltip" }
+}

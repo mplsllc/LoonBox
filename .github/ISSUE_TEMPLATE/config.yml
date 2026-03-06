@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Building from Source
+    url: https://github.com/mplsllc/LoonBox/blob/main/BUILDING.md
+    about: Having trouble building? Check the build instructions first.
+  - name: Roadmap
+    url: https://github.com/mplsllc/LoonBox/blob/main/ROADMAP.md
+    about: See what's planned before requesting a feature.

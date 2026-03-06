@@ -1,0 +1,25 @@
+[package]
+name = "loonbox_browser"
+version = "0.1.0"
+edition = "2021"
+description = "LoonBox embedded browser — filtering proxy, adblock, JS bridge"
+
+[dependencies]
+axum = { version = "0.7", features = ["tokio"] }
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+adblock = "0.12"
+hyper = { version = "1.0", features = ["full"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+http-body-util = "0.1"
+once_cell = "1.20"
+parking_lot = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1.0"
+log = "0.4"
+thiserror = "1.0"
+sha2 = "0.10"
+hex = "0.4"
+bytes = "1"
+tokio-util = { version = "0.7", features = ["io"] }

@@ -1,0 +1,46 @@
+import 'package:drift/drift.dart';
+
+class Tracks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get source => text().withDefault(const Constant('local'))();
+  TextColumn get sourceId => text().nullable()();
+  TextColumn get filePath => text().nullable().unique()();
+  IntColumn get fileSize => integer().nullable()();
+  IntColumn get fileModifiedAt => integer().nullable()();
+  TextColumn get title => text()();
+  TextColumn get artist => text().nullable()();
+  TextColumn get albumArtist => text().nullable()();
+  TextColumn get album => text().nullable()();
+  TextColumn get genre => text().nullable()();
+  IntColumn get year => integer().nullable()();
+  IntColumn get trackNumber => integer().nullable()();
+  IntColumn get discNumber => integer().nullable()();
+  IntColumn get durationMs => integer().nullable()();
+  TextColumn get comment => text().nullable()();
+  TextColumn get composer => text().nullable()();
+  TextColumn get lyrics => text().nullable()();
+  TextColumn get codec => text().nullable()();
+  IntColumn get bitrate => integer().nullable()();
+  IntColumn get sampleRate => integer().nullable()();
+  IntColumn get bitDepth => integer().nullable()();
+  IntColumn get channels => integer().nullable()();
+  BoolColumn get hasAlbumArt => boolean().withDefault(const Constant(false))();
+  TextColumn get albumArtHash => text().nullable()();
+  IntColumn get playCount => integer().withDefault(const Constant(0))();
+  IntColumn get skipCount => integer().withDefault(const Constant(0))();
+  IntColumn get lastPlayedAt => integer().nullable()();
+  IntColumn get lastSkippedAt => integer().nullable()();
+  IntColumn get rating => integer().withDefault(const Constant(0))();
+  BoolColumn get loved => boolean().withDefault(const Constant(false))();
+  IntColumn get dateAdded => integer()();
+  TextColumn get musicbrainzTrackId => text().nullable()();
+  TextColumn get musicbrainzArtistId => text().nullable()();
+  TextColumn get musicbrainzReleaseId => text().nullable()();
+  RealColumn get replayGainTrack => real().nullable()();
+  RealColumn get replayGainAlbum => real().nullable()();
+  RealColumn get bpm => real().nullable()();
+  RealColumn get loudnessLufs => real().nullable()();
+  TextColumn get titleSort => text().nullable()();
+  TextColumn get artistSort => text().nullable()();
+  TextColumn get albumSort => text().nullable()();
+}

@@ -1,134 +1,88 @@
-Nightingale Media Player
-=====================
-Nightingale is a community based fork of the Songbird Media player
-distributed under the GNU GPL and portions (XULRunner and Mozilla libs)
-licensed under the Mozilla MPL/BSD license. 
+# LoonBox
 
-The goal of Nightingale is to create a Media Player, which will 
-eventually use only system libraries to conserve space. Currently, some
-libraries are still bundled, but progress is being made to change this 
-fact.
+A modern cross-platform music player built with Flutter and Rust. The spiritual successor to [Songbird](https://en.wikipedia.org/wiki/Songbird_(software)) and [Nightingale](http://getnightingale.com/).
 
-This git tree is the Songbird trunk, rebranded for Nightingale. It's a 
-reflection of what our Xul 6+ releases will be like.
+A product of [MPLS LLC](https://mp.ls). Visit [loonbox.app](https://loonbox.app).
 
-[![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=230233)](https://www.bountysource.com/trackers/230233-nightingale-media-player-nightingale-hacking?utm_source=230233&utm_medium=shield&utm_campaign=TRACKER_BADGE)
-[![Travis CI](https://api.travis-ci.org/nightingale-media-player/nightingale-hacking.svg)](https://travis-ci.org/nightingale-media-player/nightingale-hacking)
+---
 
-Building
-========
-If you're on Linux, simply run the [build.sh](build.sh) script. It will
-download the deps and build the app for you. You'll generally need the
-usual build deps for most software packages, though.
+## Features
 
-Ubuntu and Debian users should note you'll need:
-  * libdbus-glib-1-dev
-  * libgstreamer-plugins-base0.10-dev
-  * and a few more (checkout the build article for a full list)
+- **Local music library** — scan folders, watch for changes, full metadata extraction
+- **Rust audio engine** — Symphonia decoder + cpal output with gapless playback and sample-rate resampling
+- **MusicBrainz integration** — single-track lookup, album lookup, and full library auto-tag with confidence scoring
+- **10-band parametric EQ** — 17 built-in presets, real-time DSP in the Rust pipeline
+- **Audio visualizers** — spectrum analyzer, waveform, oscilloscope, VU meter
+- **Feather theming** — 4 built-in themes (Blue Monday, Midnight, Ember, Forest) with full theme customization
+- **Smart queue** — shuffle, repeat modes, queue management
+- **Playlists** — create, edit, reorder; smart playlists coming soon
+- **Keyboard shortcuts** — play/pause, next/prev, volume, mute
+- **System tray** — minimize to tray, media controls from tray icon
+- **Media keys** — Windows SMTC integration (media overlay + hardware keys)
+- **i18n-ready** — all user-facing strings localized via ARB
 
-More information can be gleaned from the Nightingale wiki:
+## Tech Stack
 
-  * [Windows](http://wiki.getnightingale.com/doku.php?id=build:windows)
-  * [Mac](http://wiki.getnightingale.com/doku.php?id=build:mac)
-  * [Linux](http://wiki.getnightingale.com/doku.php?id=build:linux)
+| Layer | Technology |
+|-------|-----------|
+| UI & State | Flutter, Riverpod |
+| Audio Engine | Rust (Symphonia + cpal), via flutter_rust_bridge |
+| Metadata | Rust (lofty), MusicBrainz REST API |
+| Database | Drift (SQLite) |
+| Platform | Windows, Linux, macOS (no mobile for v1) |
 
-Building a Debian Package
--------------------------
-Even though this source contains a debian/ folder, do not consider it as producing a release quality build. Further it will not work out of the box, see [this section](http://wiki.getnightingale.com/doku.php?id=build:linux#additional_steps_to_build_a_debian_package) of the Linux building article.
+## Heritage
 
-Configure Options
-=================
-`ac_add_options (option here)` (one per line) in a `nightingale.config` file in the top source directory.
+LoonBox carries forward the spirit of Songbird (2006-2010, POTI Inc.) and its community fork Nightingale (2012-2018). While LoonBox is a ground-up rewrite — no XULRunner, no Gecko, no C++ — the design DNA of those projects lives on:
 
- option                                  | description 
------------------------------------------|-------------
-`--with-taglib-source=[system,packaged]` | use system taglib or not
-`--enable-debug`                         | whether or not to compile debug
-`--enable-jars`                          | whether or not to create jars
-`--enable-installer`                     | whether or not to make installer
-`--enable-official`                      | whether or not to official build
-`--enable-nightly`                       | whether or not to nightly build
-`--enable-tests`                         | whether or not to build tests
-`--enable-update-channel=CHANNEL`        | which update channel to use
-`--enable-breakpad`                      | whether or not to enable breakpad
-`--enable-static`                        | single-component static build
-`--enable-compiler-environment-checks`   | only allow supported compilers  
-`--enable-libnotify`                     | Optionally enable libnotify
-`--enable-unity-integration`             | Optional support for Unity's sound menu
-`--enable-system-nspr`                   | Optionally use your system's NSPR instead of the bundled one from Mozilla
+- **Feathers** (theming system) — Songbird coined the term; LoonBox inherits it
+- **Extension architecture** — inspired by mashTape's provider plugin pattern
+- **Library schema** — evolved from Songbird's EAV metadata model into a denormalized, type-safe schema
+- **Smart playlists** — modernized from `sbILibraryConstraintBuilder` into a rule-based DSL
 
-Notes for Configurable Options
-==============================
-libnotify support
------------------
-dependencies:
-  * libnotify-dev
-  * libgtk2.0-dev
+See [docs/lineage.md](docs/lineage.md) for the full lineage mapping from old source files to their modern equivalents.
 
-Unity sound menu integration
-----------------------------
-dependencies:
-  * libunity-dev
-  * libnotify-dev
-  * libgtk2.0-dev
+## Screenshots
 
-System NSPR
------------
-dependencies:
-  * libnspr4-dev
+<!-- Screenshots will be added here -->
 
-Contributions
-=============
-Everything relevant to you should be explained in [CONTRIBUTING.md](CONTRIBUTING.md).
+## Getting Started
 
-Contributors
-============
-  * Steven Bengtson - Stevo
-  * Janek Bevendorff - Manko10
-  * Downward
-  * Lukas Diener - Lukas_Skywalker
-  * Matt Dwyer - MattSD
-  * Martin Giger - freaktechnik
-  * Geoffrey Gates - Timmythepirate
-  * Andrew Luecke - Auzy
-  * Matt Parnell - Ilikenwf
-  * Dirk Steinmetz - rsjtdrjgfuzkfg
-  * Antoine Turmel - GeekShadow
-  * Mark Yen - Mook
-  * Akil Krishnan - LIB53
-  * Alexander Korenev - LookingMan
-  * John Murray - johnmurrayvi
-  * David Rogers - Ezekial1000
-  * Luis Gallego - luisgmarine
-  * Lars Tobias Skjong-Børsting - larstobi
-  * chocolateboy
-  * Logan Smyth - loganfsmyth
-  * Unit 193 / Ukikie
-  * Mark Becwar - thebecwar
-  * djcj
+See [BUILDING.md](BUILDING.md) for build instructions.
 
-
-REMINDER!!!!
-============
-This is an open source software and everyone who works on it is a
-volunteer! Don't be a troll towards the people giving you free
-software and hard work! Look at the [license](LICENSE) for detailed information.
+```bash
+git clone https://github.com/mplsllc/LoonBox.git
+cd LoonBox/loon_app
+flutter pub get
+flutter_rust_bridge_codegen generate
+flutter run
 ```
 
-░░░░░░▄▄▄▄▀▀▀▀▀▀▀▀▄▄▄▄▄▄░░░░░░░
-░░░░░█░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░▀▀▄░░░░
-░░░░█░░░▒▒▒▒▒▒░░░░░░░░▒▒▒░░█░░░
-░░░█░░░░░░▄██▀▄▄░░░░░▄▄▄░░░░█░░
-░▄▀▒▄▄▄▒░█▀▀▀▀▄▄█░░░██▄▄█░░░░█░
-█░▒█▒▄░▀▄▄▄▀░░░░░░░░█░░░▒▒▒▒▒░█
-█░▒█░█▀▄▄░░░░░█▀░░░░▀▄░░▄▀▀▀▄▒█
-░█░▀▄░█▄░█▀▄▄░▀░▀▀░▄▄▀░░░░█░░█░
-░░█░░░▀▄▀█▄▄░█▀▀▀▄▄▄▄▀▀█▀██░█░░
-░░░█░░░░██░░▀█▄▄▄█▄▄█▄████░█░░░
-░░░░█░░░░▀▀▄░█░░░█░█▀██████░█░░
-░░░░░▀▄░░░░░▀▀▄▄▄█▄█▄█▄█▄▀░░█░░
-░░░░░░░▀▄▄░▒▒▒▒░░░░░░░░░░▒░░░█░
-░░░░░░░░░░▀▀▄▄░▒▒▒▒▒▒▒▒▒▒░░░░█░
-░░░░░░░░░░░░░░▀▄▄▄▄▄▄▄▄▄▄▄▄▄▄▀░
+## Contributing
 
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+By submitting a contribution, you agree to the [Contributor License Agreement](CLA.md).
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the full development roadmap.
+
+**Coming soon:**
+- Feather shells (full layout transformations, including a Winamp-style skin)
+- Lua extension system with The Nest marketplace
+- Fullscreen visualizer mode with user-uploadable visualizers
+- Artist Direct (decentralized music distribution)
+- Subsonic server integration
+
+## License
+
+LoonBox is licensed under the [GNU Affero General Public License v3.0](LICENSE).
+
+**Ecosystem carve-out:** Feathers (themes) and extensions (plugins) that interact with LoonBox solely through the documented public APIs may be distributed under any license. See [LICENSE](LICENSE) for details.
+
+## Links
+
+- [loonbox.app](https://loonbox.app) — Official website
+- [mp.ls](https://mp.ls) — MPLS LLC
+- [GitHub](https://github.com/mplsllc/LoonBox) — Source code

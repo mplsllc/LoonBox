@@ -1,61 +1,62 @@
-*~
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
-thumbs.db
-.directory
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# VCS
-.bzr
-.svn
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# IDE & text editor files
-*.anjuta*
-.cproject
-.project
-.settings
-*.sublime-*
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
 
-# Dependencies
-# Don't ignore 'official' md5 files
-!dependencies/*1.12*.md5
-# Ignore the other md5 files though
-dependencies/*.md5
-dependencies/*.zip
-dependencies/*.tar.???
-dependencies/*.tar.????
-dependencies/*-i686*/*
-dependencies/*-i686-msvc?/*
-dependencies/*-i686-msvc??/*
-dependencies/*-x86_64*/*
-# Ignore symlinked dirs
-dependencies/*-i686
-dependencies/*-x86_64
-dependencies/*-i686-msvc?
-dependencies/*-i686-msvc??
+# Drift generated code
+*.g.dart
 
-# Vendor dependencies
-!dependencies/vendor
-dependencies/vendor-*
-dependencies/vendor.*
+# flutter_rust_bridge generated
+lib/src/rust/
 
-# Files generated in tree
-debian/nightingale
-debian/*.debhelper.log
-debian/*.substvars
-debian/files
-documentation/api/*
-tools/win32/reshacker/ResHacker.ini
-tools/win32/reshacker/ResHacker.log
+# Rust build artifacts
+rust/target/
 
-# Built files
-compiled*/*
-compiled-release*
+# Symbolication related
+app.*.symbols
 
-# Auto generated config files
-autom4te.cache
-configure
-config.log
-conftest.o
-confdefs.h
-*config.out
-*.config*
-.*config.*
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Platform ephemeral
+macos/Flutter/ephemeral/
+linux/flutter/ephemeral/
+windows/flutter/ephemeral/
+
+# Secrets
+.env
+*.key
+*.pem
+
+# Private / legacy (local only)
+.private/

@@ -1,0 +1,62 @@
+name: loonbox
+description: "LoonBox — a modern cross-platform music player. Successor to Songbird and Nightingale. A product of MPLS LLC."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # State management
+  flutter_riverpod: ^2.6.1
+
+  # Database (SQLite)
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.28
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+  # Rust FFI bridge
+  flutter_rust_bridge: ^2.11.1
+  freezed_annotation: ^2.4.1
+
+  # HTTP client (MusicBrainz API, Cover Art Archive)
+  http: ^1.2.1
+
+  # Icons & SVG
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  file_picker: ^10.3.10
+  smtc_windows: ^1.1.0
+  tray_manager: ^0.2.3
+  window_manager: ^0.4.3
+  url_launcher: ^6.3.2
+  webview_windows: ^0.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # drift code generation
+  drift_dev: ^2.22.1
+  build_runner: ^2.4.14
+
+  # flutter_rust_bridge codegen
+  freezed: ^2.5.2
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/icons/classic/
+    - assets/fonts/
+    - assets/default_feathers/

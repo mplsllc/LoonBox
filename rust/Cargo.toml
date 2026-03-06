@@ -1,0 +1,3 @@
+[workspace]
+members = ["loonbox_audio", "loonbox_metadata", "loonbox_bridge", "loonbox_extensions", "loonbox_browser"]
+resolver = "2"
