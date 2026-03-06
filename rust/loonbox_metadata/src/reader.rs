@@ -33,6 +33,8 @@ pub fn read_metadata(path: &str) -> Result<TrackMetadata, MetadataError> {
     };
 
     if let Some(tag) = tag {
+        use lofty::tag::ItemKey;
+
         meta.title = tag.title().map(|s| s.to_string());
         meta.artist = tag.artist().map(|s| s.to_string());
         meta.album = tag.album().map(|s| s.to_string());
@@ -42,6 +44,15 @@ pub fn read_metadata(path: &str) -> Result<TrackMetadata, MetadataError> {
         meta.year = tag.year();
         meta.comment = tag.comment().map(|s| s.to_string());
         meta.has_album_art = !tag.pictures().is_empty();
+
+        // MusicBrainz IDs — lofty handles format-specific mapping
+        // (TXXX for ID3v2, Vorbis comment, MP4 freeform atom)
+        meta.musicbrainz_track_id = tag
+            .get_string(&ItemKey::MusicBrainzRecordingId)
+            .map(|s| s.to_string());
+        meta.musicbrainz_artist_id = tag
+            .get_string(&ItemKey::MusicBrainzArtistId)
+            .map(|s| s.to_string());
     }
 
     Ok(meta)
