@@ -1,0 +1,515 @@
+---
+const title = "LoonBox — A Modern Music Player";
+const description = "A cross-platform desktop music player built with Flutter and Rust. The spiritual successor to Songbird and Nightingale.";
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content="/images/home.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://loonbox.app" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="bg-accent"></div>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo-group">
+        <img src="/images/app_icon.png" alt="LoonBox" class="logo" />
+        <span class="wordmark">LoonBox</span>
+      </div>
+      <a href="https://github.com/mplsllc/LoonBox" class="github-link" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="alpha-badge">Alpha</div>
+        <h1>Music, liberated.</h1>
+        <p class="subtitle">
+          LoonBox is a modern, open-source desktop music player built with Flutter&nbsp;and&nbsp;Rust.
+          The spiritual successor to <a href="https://en.wikipedia.org/wiki/Songbird_(software)">Songbird</a> and <a href="http://getnightingale.com/">Nightingale</a>.
+        </p>
+        <div class="cta-row">
+          <a href="https://github.com/mplsllc/LoonBox" class="btn btn-primary">View on GitHub</a>
+          <span class="cta-note">Windows build available &middot; Linux &amp; macOS coming soon</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="screenshot-hero">
+      <img src="/images/home.png" alt="LoonBox home page with listening stats, recently played, and top albums" class="hero-img" />
+    </section>
+
+    <section class="features">
+      <h2>Everything you need. Nothing you don't.</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#9835;</div>
+          <h3>Rust Audio Engine</h3>
+          <p>Gapless playback, sample-rate resampling, 10-band parametric EQ with 17 presets. No Electron. No compromises.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128218;</div>
+          <h3>Your Library, Your Way</h3>
+          <p>Scan your folders. Watch for changes. Full metadata extraction for MP3, FLAC, OGG, WAV, and AAC. MusicBrainz auto-tagging.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#127912;</div>
+          <h3>Feather Theming</h3>
+          <p>5 built-in feathers from modern to classic. Full shell transformations coming soon &mdash; including a Winamp-style skin.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128295;</div>
+          <h3>Open Source</h3>
+          <p>AGPL-3.0 licensed. Extensions and themes can use any license. Built in the open, by the community, for the community.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery">
+      <h2>See it in action</h2>
+      <div class="gallery-grid">
+        <figure>
+          <img src="/images/albums.png" alt="Album grid with art and filters" loading="lazy" />
+          <figcaption>Album browser</figcaption>
+        </figure>
+        <figure>
+          <img src="/images/artists.png" alt="Artist browser with album art avatars" loading="lazy" />
+          <figcaption>Artist browser</figcaption>
+        </figure>
+        <figure>
+          <img src="/images/search.png" alt="Search with artist art and track results" loading="lazy" />
+          <figcaption>Search</figcaption>
+        </figure>
+        <figure>
+          <img src="/images/settings.png" alt="Settings with feather switcher and browser controls" loading="lazy" />
+          <figcaption>Settings &amp; EQ</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="roadmap">
+      <h2>What's ahead</h2>
+      <div class="roadmap-list">
+        <div class="roadmap-item done">
+          <span class="roadmap-marker">&#10003;</span>
+          <div>
+            <strong>Audio Engine</strong>
+            <span>Rust-powered playback, EQ, visualizers</span>
+          </div>
+        </div>
+        <div class="roadmap-item done">
+          <span class="roadmap-marker">&#10003;</span>
+          <div>
+            <strong>Library &amp; Metadata</strong>
+            <span>Folder scanning, MusicBrainz tagging, album art</span>
+          </div>
+        </div>
+        <div class="roadmap-item done">
+          <span class="roadmap-marker">&#10003;</span>
+          <div>
+            <strong>Core UI</strong>
+            <span>Library, albums, artists, playlists, search, queue, now playing</span>
+          </div>
+        </div>
+        <div class="roadmap-item next">
+          <span class="roadmap-marker">&#9654;</span>
+          <div>
+            <strong>Feather Shells</strong>
+            <span>Full layout transformations &mdash; Winamp-style skins and more</span>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-marker">&#9675;</span>
+          <div>
+            <strong>Lua Extensions</strong>
+            <span>Sandboxed plugins with The Nest marketplace</span>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-marker">&#9675;</span>
+          <div>
+            <strong>Tremolo</strong>
+            <span>Decentralized music distribution and purchase</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="heritage">
+      <img src="/images/darkloon.png" alt="" class="heritage-loon" />
+      <h2>Built on legacy</h2>
+      <p>
+        LoonBox carries forward the spirit of Songbird (2006) and Nightingale (2012). A ground-up rewrite &mdash;
+        no XULRunner, no Gecko &mdash; but the DNA lives on: feather theming, extension architecture,
+        and a library-first approach to music management.
+      </p>
+      <p class="heritage-link">
+        A product of <a href="https://mp.ls">MPLS LLC</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>&copy; {new Date().getFullYear()} MPLS LLC</span>
+      <span class="footer-sep">&middot;</span>
+      <a href="https://github.com/mplsllc/LoonBox">GitHub</a>
+      <span class="footer-sep">&middot;</span>
+      <a href="https://mp.ls">mp.ls</a>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style>
+  :root {
+    --bg: #0c0e14;
+    --bg-card: #141722;
+    --bg-card-hover: #1a1e2e;
+    --text: #e4e6ec;
+    --text-muted: #8b90a0;
+    --accent: #2F5F82;
+    --accent-light: #3d7aa3;
+    --accent-glow: rgba(47, 95, 130, 0.15);
+    --radius: 12px;
+    --max-width: 1080px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a {
+    color: var(--accent-light);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .bg-accent {
+    position: fixed;
+    top: -40%;
+    right: -20%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(12, 14, 20, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+  .wordmark {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+  .github-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .github-link:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  /* Sections */
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  section {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+
+  /* Hero */
+  .hero {
+    padding-top: 6rem;
+    padding-bottom: 2rem;
+    text-align: center;
+  }
+  .alpha-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+  .cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--accent-light);
+    text-decoration: none;
+  }
+  .cta-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Hero screenshot */
+  .screenshot-hero {
+    padding-top: 0;
+    padding-bottom: 2rem;
+    text-align: center;
+  }
+  .hero-img {
+    width: 100%;
+    max-width: 900px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+
+  /* Features */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+  .feature-card:hover {
+    background: var(--bg-card-hover);
+  }
+  .feature-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .feature-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .feature-card p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Gallery */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .gallery-grid figure {
+    text-align: center;
+  }
+  .gallery-grid img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.3s;
+  }
+  .gallery-grid img:hover {
+    transform: scale(1.02);
+  }
+  .gallery-grid figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* Roadmap */
+  .roadmap-list {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .roadmap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .roadmap-item.done {
+    opacity: 0.7;
+  }
+  .roadmap-item.next {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .roadmap-marker {
+    flex-shrink: 0;
+    width: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    padding-top: 0.1rem;
+    color: var(--accent-light);
+  }
+  .roadmap-item.done .roadmap-marker {
+    color: #4ade80;
+  }
+  .roadmap-item div strong {
+    display: block;
+    font-size: 0.95rem;
+  }
+  .roadmap-item div span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Heritage */
+  .heritage {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .heritage-loon {
+    width: 120px;
+    opacity: 0.08;
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .heritage p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .heritage-link {
+    margin-top: 1rem !important;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    z-index: 1;
+  }
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .footer-sep {
+    margin: 0 0.5rem;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .hero { padding-top: 3rem; }
+    .gallery-grid { grid-template-columns: 1fr; }
+    .heritage-loon { display: none; }
+  }
+</style>
