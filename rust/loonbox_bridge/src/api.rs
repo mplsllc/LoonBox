@@ -455,6 +455,38 @@ pub fn metadata_find_file_art(track_path: String) -> anyhow::Result<Option<Strin
     Ok(loonbox_metadata::albumart::find_file_art(&track_path))
 }
 
+#[frb]
+pub fn metadata_write(
+    path: String,
+    title: Option<String>,
+    artist: Option<String>,
+    album: Option<String>,
+    genre: Option<String>,
+    track_number: Option<u32>,
+    disc_number: Option<u32>,
+    year: Option<u32>,
+    comment: Option<String>,
+) -> anyhow::Result<()> {
+    loonbox_metadata::writer::write_metadata(
+        &path,
+        title.as_deref(),
+        artist.as_deref(),
+        album.as_deref(),
+        genre.as_deref(),
+        track_number,
+        disc_number,
+        year,
+        comment.as_deref(),
+    )
+    .map_err(|e| anyhow::anyhow!("{}", e))
+}
+
+#[frb]
+pub fn metadata_write_mb_id(path: String, track_id: String) -> anyhow::Result<()> {
+    loonbox_metadata::writer::write_musicbrainz_id(&path, &track_id)
+        .map_err(|e| anyhow::anyhow!("{}", e))
+}
+
 // ─── Library Scanning ────────────────────────────────────────────────
 
 /// Convert loonbox_metadata::TrackMetadata to bridge TrackMetadata.
@@ -775,4 +807,46 @@ pub fn extension_set_storage(
         .ok_or_else(|| anyhow::anyhow!("Extension '{}' not loaded", extension_id))?;
     instance.set_storage(data.into_iter().collect());
     Ok(())
+}
+
+// ─── Browser ─────────────────────────────────────────────────────────
+
+/// Start the browser filtering proxy. Returns the port number.
+#[frb]
+pub fn browser_start_proxy(cache_dir: String) -> anyhow::Result<u32> {
+    let port = loonbox_browser::start_proxy(&cache_dir)?;
+    Ok(port as u32)
+}
+
+/// Stop the browser filtering proxy.
+#[frb]
+pub fn browser_stop_proxy() {
+    loonbox_browser::stop_proxy();
+}
+
+/// Get the current proxy port (0 if not running).
+#[frb]
+pub fn browser_get_proxy_port() -> u32 {
+    loonbox_browser::get_proxy_port() as u32
+}
+
+/// Verify a package file's SHA-256 hash matches the expected hex string.
+#[frb]
+pub fn browser_verify_package(
+    package_path: String,
+    expected_sha256: String,
+) -> anyhow::Result<bool> {
+    loonbox_browser::signatures::verify_package(&package_path, &expected_sha256)
+}
+
+/// Update adblock filter lists from the network.
+#[frb]
+pub fn browser_update_filter_lists() -> anyhow::Result<()> {
+    loonbox_browser::update_filter_lists()
+}
+
+/// Get adblock filter stats as JSON.
+#[frb]
+pub fn browser_get_filter_stats() -> String {
+    loonbox_browser::get_filter_stats()
 }

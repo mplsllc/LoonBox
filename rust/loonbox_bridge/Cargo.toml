@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 description = "LoonBox FFI bridge — flutter_rust_bridge API surface"
 
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(frb_expand)'] }
+
 [lib]
 crate-type = ["lib", "cdylib", "staticlib"]
 
@@ -11,6 +14,7 @@ crate-type = ["lib", "cdylib", "staticlib"]
 loonbox_audio = { path = "../loonbox_audio" }
 loonbox_metadata = { path = "../loonbox_metadata" }
 loonbox_extensions = { path = "../loonbox_extensions" }
+loonbox_browser = { path = "../loonbox_browser" }
 flutter_rust_bridge = "=2.11.1"
 once_cell = "1.20"
 parking_lot = "0.12"
