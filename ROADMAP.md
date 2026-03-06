@@ -16,14 +16,17 @@ Rust audio engine using Symphonia (decoder) and cpal (output). Gapless playback,
 SQLite database via Drift with full track/album/artist schema. Folder scanning with file watcher for live updates. Metadata extraction via lofty (MP3, FLAC, OGG, WAV, AAC). Album art extraction and caching. MusicBrainz integration for track, album, and full library auto-tagging.
 
 ### Phase 3: Core UI
-Complete desktop UI: library view with sortable columns, album grid with detail pages, artist browser, playlist management (CRUD + reorder), search, queue management with shuffle/repeat, now-playing bar and full-screen now-playing view, settings page with EQ controls, audio visualizers (spectrum, waveform, oscilloscope, VU meter), system tray with media controls, Windows SMTC integration, keyboard shortcuts, feather theming (4 built-in themes), i18n support.
+Complete desktop UI: library view with sortable columns, album grid with detail pages, artist browser, playlist management (CRUD + reorder), search, queue management with shuffle/repeat, now-playing bar and full-screen now-playing view, settings page with EQ controls, audio visualizers (spectrum, waveform, oscilloscope, VU meter), system tray with media controls, Windows SMTC integration, keyboard shortcuts, feather theming (5 built-in feathers), i18n support. Classic and modern shell layouts. Home page with recently played, jump back in, and discovery sections.
+
+### Phase 3.5: Community Launch
+Open-source release on GitHub. Documentation, contribution guidelines, issue templates. First public builds.
+
+### Phase 10: Embedded Browser
+WebView2 embedded browser with Rust filtering proxy, Brave adblock engine, domain allowlist/blocklist, JS bridge for trusted domains. Browser settings UI.
 
 ---
 
 ## In Progress
-
-### Phase 3.5: Community Launch
-Open-source release on GitHub. Documentation, contribution guidelines, issue templates. First public builds.
 
 ---
 

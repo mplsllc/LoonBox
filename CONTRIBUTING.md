@@ -58,7 +58,7 @@ LoonBox uses specific terminology inherited from Songbird. Please use these term
 | **Calls** | Event hooks dispatched to extensions |
 | **Plumage** | In-app feather preview and switcher |
 | **Flock** | Community and contributors (that's you!) |
-| **Artist Direct** | Decentralized music distribution platform (future) |
+| **Tremolo** | Decentralized music distribution platform (future) |
 
 ## Good First Issues
 

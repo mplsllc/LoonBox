@@ -13,7 +13,8 @@ A product of [MPLS LLC](https://mp.ls). Visit [loonbox.app](https://loonbox.app)
 - **MusicBrainz integration** — single-track lookup, album lookup, and full library auto-tag with confidence scoring
 - **10-band parametric EQ** — 17 built-in presets, real-time DSP in the Rust pipeline
 - **Audio visualizers** — spectrum analyzer, waveform, oscilloscope, VU meter
-- **Feather theming** — 4 built-in themes (Blue Monday, Midnight, Ember, Forest) with full theme customization
+- **Embedded browser** — WebView2 with Rust filtering proxy and adblock
+- **Feather theming** — 5 built-in feathers (Blue Monday, Purple Rain, Pink Martini, Gonzo, Nightingale) with full theme customization
 - **Smart queue** — shuffle, repeat modes, queue management
 - **Playlists** — create, edit, reorder; smart playlists coming soon
 - **Keyboard shortcuts** — play/pause, next/prev, volume, mute
@@ -40,7 +41,7 @@ LoonBox carries forward the spirit of Songbird (2006-2010, POTI Inc.) and its co
 - **Library schema** — evolved from Songbird's EAV metadata model into a denormalized, type-safe schema
 - **Smart playlists** — modernized from `sbILibraryConstraintBuilder` into a rule-based DSL
 
-See [docs/lineage.md](docs/lineage.md) for the full lineage mapping from old source files to their modern equivalents.
+The git history of this repository preserves the full lineage — Songbird's initial import through Nightingale's final commits, followed by the LoonBox rewrite.
 
 ## Screenshots
 
@@ -52,7 +53,7 @@ See [BUILDING.md](BUILDING.md) for build instructions.
 
 ```bash
 git clone https://github.com/mplsllc/LoonBox.git
-cd LoonBox/loon_app
+cd LoonBox
 flutter pub get
 flutter_rust_bridge_codegen generate
 flutter run
@@ -72,7 +73,7 @@ See [ROADMAP.md](ROADMAP.md) for the full development roadmap.
 - Feather shells (full layout transformations, including a Winamp-style skin)
 - Lua extension system with The Nest marketplace
 - Fullscreen visualizer mode with user-uploadable visualizers
-- Artist Direct (decentralized music distribution)
+- Tremolo (decentralized music distribution)
 - Subsonic server integration
 
 ## License
