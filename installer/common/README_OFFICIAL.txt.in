@@ -1,9 +1,0 @@
-#filter substitution
-Nightingale @SB_MILESTONE@ BUILD @SB_BUILD_NUMBER@ README
------------------------------------------------------------------------------
-                                 
-RELEASE NOTES
-Information regarding new features, functionality improvements, and known 
-issues for this release can be found at:
-
-http://wiki.getnightingale.com/doku.php?id=releases_notes:@SB_MILESTONE@_release_notes

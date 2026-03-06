@@ -1,8 +1,0 @@
-<!ENTITY shoutcast-radio.filter "Filtre">
-<!ENTITY shoutcast-radio.genre "Tarz">
-<!ENTITY shoutcast-radio.clear "Temizle">
-<!ENTITY shoutcast-radio.add-station "İstasyon ekle">
-<!ENTITY shoutcast-radio.enter-name "İstasyona vermek istediğiniz ismi giriniz">
-<!ENTITY shoutcast-radio.station-name "İstasyon ismi">
-<!ENTITY shoutcast-radio.enter-url "SHOUTcast istasyonu için bağlantı gir">
-<!ENTITY shoutcast-radio.enter-genre "İstasyon için bir tarz seç">
