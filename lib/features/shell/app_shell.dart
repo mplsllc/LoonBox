@@ -84,6 +84,9 @@ class _AppShellState extends ConsumerState<AppShell> with WindowListener {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.space): () {
+          // Don't steal space from text fields
+          final focus = FocusManager.instance.primaryFocus;
+          if (focus?.context?.widget is EditableText) return;
           if (playback.state == PlaybackState.playing) {
             audio.pause();
           } else {

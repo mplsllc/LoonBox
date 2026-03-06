@@ -11,6 +11,7 @@ import '../../player/presentation/queue_provider.dart';
 import '../widgets/track_context_menu.dart';
 import 'album_detail_page.dart';
 import 'albums_page.dart';
+import 'artists_page.dart';
 
 /// Provider for albums by a specific artist.
 final artistAlbumsProvider =
@@ -751,7 +752,7 @@ class _ExternalLinksSection extends ConsumerWidget {
 
 // ─── Artist Image Widget ───────────────────────────────────────────────────
 
-class _ArtistImage extends StatelessWidget {
+class _ArtistImage extends ConsumerWidget {
   const _ArtistImage({
     required this.imageUrl,
     required this.name,
@@ -763,7 +764,7 @@ class _ArtistImage extends StatelessWidget {
   final double radius;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -780,7 +781,24 @@ class _ArtistImage extends StatelessWidget {
       );
     }
 
-    return _fallbackAvatar(textTheme, colorScheme);
+    // Fall back to album art from this artist's tracks
+    final artPathAsync = ref.watch(artistArtPathProvider(name));
+    return artPathAsync.when(
+      data: (path) {
+        if (path != null) {
+          return ClipOval(
+            child: AlbumArtWidget(
+              trackPath: path,
+              size: radius * 2,
+              borderRadius: 0,
+            ),
+          );
+        }
+        return _fallbackAvatar(textTheme, colorScheme);
+      },
+      loading: () => _fallbackAvatar(textTheme, colorScheme),
+      error: (_, __) => _fallbackAvatar(textTheme, colorScheme),
+    );
   }
 
   Widget _fallbackAvatar(TextTheme textTheme, ColorScheme colorScheme) {
