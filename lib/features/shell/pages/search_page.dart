@@ -6,8 +6,10 @@ import '../../../l10n/app_localizations.dart';
 import '../widgets/loon_loader.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
+import '../../player/presentation/album_art_widget.dart';
 import 'album_detail_page.dart';
 import 'artist_detail_page.dart';
+import 'artists_page.dart';
 
 /// Search results grouped by type.
 class SearchResults {
@@ -147,19 +149,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   title: l10n.artistsTitle,
                   count: data.artists.length,
                 ),
-                ...data.artists.map((artist) => ListTile(
-                      leading: CircleAvatar(
-                        child: Text(artist.name.isNotEmpty ? artist.name[0].toUpperCase() : '?'),
-                      ),
-                      title: Text(
-                        artist.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => ArtistDetailPage(artist: artist)),
-                      ),
-                    )),
+                ...data.artists.map((artist) => _ArtistSearchTile(artist: artist)),
               ],
 
               // Albums section
@@ -245,6 +235,48 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final m = total.inMinutes;
     final s = total.inSeconds.remainder(60);
     return '$m:${s.toString().padLeft(2, '0')}';
+  }
+}
+
+class _ArtistSearchTile extends ConsumerWidget {
+  const _ArtistSearchTile({required this.artist});
+  final Artist artist;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final artPathAsync = ref.watch(artistArtPathProvider(artist.name));
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final Widget avatar = artPathAsync.when(
+      data: (path) {
+        if (path != null) {
+          return ClipOval(
+            child: AlbumArtWidget(trackPath: path, size: 40, borderRadius: 0),
+          );
+        }
+        return _initialAvatar(colorScheme);
+      },
+      loading: () => _initialAvatar(colorScheme),
+      error: (_, __) => _initialAvatar(colorScheme),
+    );
+
+    return ListTile(
+      leading: SizedBox(width: 40, height: 40, child: avatar),
+      title: Text(artist.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => ArtistDetailPage(artist: artist)),
+      ),
+    );
+  }
+
+  Widget _initialAvatar(ColorScheme colorScheme) {
+    return CircleAvatar(
+      backgroundColor: colorScheme.primaryContainer,
+      child: Text(
+        artist.name.isNotEmpty ? artist.name[0].toUpperCase() : '?',
+        style: TextStyle(color: colorScheme.onPrimaryContainer),
+      ),
+    );
   }
 }
 

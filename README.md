@@ -45,7 +45,19 @@ The git history of this repository preserves the full lineage — Songbird's ini
 
 ## Screenshots
 
-<!-- Screenshots will be added here -->
+<p align="center">
+  <img src="screenshots/home.png" width="800" alt="Home page with listening stats, recently played, and top albums">
+</p>
+
+<p align="center">
+  <img src="screenshots/albums.png" width="400" alt="Album grid with art and filters">
+  <img src="screenshots/artists.png" width="400" alt="Artist browser with album art avatars">
+</p>
+
+<p align="center">
+  <img src="screenshots/search.png" width="400" alt="Search with artist art and track results">
+  <img src="screenshots/settings.png" width="400" alt="Settings with feather switcher and browser controls">
+</p>
 
 ## Getting Started
 

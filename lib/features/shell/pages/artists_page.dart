@@ -139,6 +139,17 @@ final artistListProvider = FutureProvider<List<ArtistListItem>>((ref) async {
   return items;
 });
 
+/// Provider that returns a representative track path for an artist (for avatar art).
+final artistArtPathProvider =
+    FutureProvider.family<String?, String>((ref, artistName) async {
+  final db = ref.watch(databaseProvider);
+  final tracks = await (db.select(db.tracks)
+        ..where((t) => t.artist.equals(artistName) & t.hasAlbumArt.equals(true))
+        ..limit(1))
+      .get();
+  return tracks.isNotEmpty ? tracks.first.filePath : null;
+});
+
 // ─── Sort Mode ─────────────────────────────────────────────────────────────
 
 enum _ArtistSortMode { nameAsc, nameDesc, mostTracks, mostAlbums }
