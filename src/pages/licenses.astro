@@ -1,0 +1,102 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+---
+
+<LegalLayout title="Licenses" lastUpdated="March 6, 2026">
+
+<h2>LoonBox Licensing</h2>
+<p>LoonBox uses a permissive ecosystem model: the application itself is copyleft, but themes and plugins you build are yours to license however you choose.</p>
+
+<h2>Application License</h2>
+<p>LoonBox source code is licensed under the <strong>GNU Affero General Public License v3.0</strong> (AGPL-3.0).</p>
+<p>This means:</p>
+<ul>
+  <li>You can view, modify, and redistribute the source code</li>
+  <li>If you modify LoonBox and distribute it or run it as a network service, you must share your modifications under the same license</li>
+  <li>Full license text: <a href="https://github.com/mplsllc/LoonBox/blob/sb-trunk-oldxul/LICENSE">LICENSE</a></li>
+</ul>
+
+<h2>Ecosystem Carve-Out</h2>
+<p>Feathers (themes) and extensions (plugins) that interact with LoonBox <strong>solely through the documented public APIs</strong> may be distributed under any license, including proprietary licenses. The AGPL-3.0 does not extend to these works.</p>
+<p>This means you can build and sell commercial feathers and extensions without open-sourcing them.</p>
+
+<h2>Contributor License Agreement</h2>
+<p>Contributors to LoonBox sign a CLA that:</p>
+<ul>
+  <li>Lets you retain copyright ownership of your contributions</li>
+  <li>Grants MPLS LLC a license to use, modify, and relicense contributions</li>
+  <li>Full text: <a href="https://github.com/mplsllc/LoonBox/blob/sb-trunk-oldxul/CLA.md">CLA.md</a></li>
+</ul>
+
+<h2>Rust Crates</h2>
+
+<table>
+  <thead>
+    <tr><th>Crate</th><th>Purpose</th><th>License</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>symphonia</td><td>Audio decoding (MP3, FLAC, OGG, WAV, AAC)</td><td>MPL-2.0</td></tr>
+    <tr><td>cpal</td><td>Cross-platform audio output</td><td>Apache-2.0</td></tr>
+    <tr><td>lofty</td><td>Audio metadata reading/writing</td><td>Apache-2.0 / MIT</td></tr>
+    <tr><td>mlua</td><td>Lua scripting engine for extensions</td><td>MIT</td></tr>
+    <tr><td>adblock</td><td>Brave adblock engine for embedded browser</td><td>MPL-2.0</td></tr>
+    <tr><td>rqbit</td><td>BitTorrent client for Tremolo (planned)</td><td>Apache-2.0</td></tr>
+    <tr><td>tokio</td><td>Async runtime (network layer only)</td><td>MIT</td></tr>
+    <tr><td>serde</td><td>Serialization</td><td>Apache-2.0 / MIT</td></tr>
+    <tr><td>flutter_rust_bridge</td><td>Dart-Rust FFI bridge</td><td>MIT</td></tr>
+  </tbody>
+</table>
+
+<h2>Flutter / Dart Packages</h2>
+
+<table>
+  <thead>
+    <tr><th>Package</th><th>Purpose</th><th>License</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>flutter</td><td>UI framework</td><td>BSD-3-Clause</td></tr>
+    <tr><td>flutter_riverpod</td><td>State management</td><td>MIT</td></tr>
+    <tr><td>drift</td><td>SQLite ORM / database</td><td>MIT</td></tr>
+    <tr><td>webview_windows</td><td>Embedded browser (WebView2)</td><td>MIT</td></tr>
+    <tr><td>system_tray</td><td>System tray integration</td><td>MIT</td></tr>
+    <tr><td>smtc_windows</td><td>Windows media transport controls</td><td>MIT</td></tr>
+    <tr><td>flutter_rust_bridge</td><td>FFI code generation</td><td>MIT</td></tr>
+    <tr><td>path_provider</td><td>Platform directory paths</td><td>BSD-3-Clause</td></tr>
+    <tr><td>file_picker</td><td>Native file/folder picker</td><td>MIT</td></tr>
+    <tr><td>http</td><td>HTTP client (MusicBrainz API)</td><td>BSD-3-Clause</td></tr>
+  </tbody>
+</table>
+
+<h2>Website</h2>
+
+<table>
+  <thead>
+    <tr><th>Package</th><th>Purpose</th><th>License</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Astro</td><td>Static site generator</td><td>MIT</td></tr>
+    <tr><td>Inter</td><td>Typeface</td><td>OFL-1.1</td></tr>
+  </tbody>
+</table>
+
+<h2>Server Infrastructure</h2>
+
+<table>
+  <thead>
+    <tr><th>Software</th><th>Purpose</th><th>License</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Linux (Ubuntu)</td><td>Operating system</td><td>GPL-2.0</td></tr>
+    <tr><td>nginx</td><td>Web server / reverse proxy</td><td>BSD-2-Clause</td></tr>
+    <tr><td>PostgreSQL</td><td>Account database (planned)</td><td>PostgreSQL License</td></tr>
+  </tbody>
+</table>
+
+<h2>Heritage</h2>
+<p>LoonBox is a spiritual successor to <a href="https://en.wikipedia.org/wiki/Songbird_(software)">Songbird</a> (POTI Inc., 2006-2010) and <a href="http://getnightingale.com/">Nightingale</a> (community, 2012-2018). LoonBox is a complete rewrite — no code from Songbird or Nightingale is used in the application. The git repository preserves the historical commit lineage for reference.</p>
+<p>Songbird was originally licensed under GPL-2.0. Nightingale continued under GPL-2.0. LoonBox is independently licensed under AGPL-3.0.</p>
+
+<h2>Questions</h2>
+<p>For licensing questions, contact <a href="mailto:legal@loonbox.app">legal@loonbox.app</a>.</p>
+
+</LegalLayout>

@@ -1,0 +1,126 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+---
+
+<LegalLayout title="Privacy Policy" lastUpdated="March 6, 2026">
+
+<h2>1. Who We Are</h2>
+<p>LoonBox is operated by <strong>MPLS LLC</strong>, a company based in Minnesota, USA. This policy covers the LoonBox desktop application, the loonbox.app website, and any associated services including The Nest marketplace and Tremolo music platform.</p>
+<p><strong>Contact:</strong> <a href="mailto:privacy@loonbox.app">privacy@loonbox.app</a></p>
+
+<h2>2. What We Collect</h2>
+
+<h3>Account Information</h3>
+<p>When you create a LoonBox account, we collect:</p>
+<ul>
+  <li><strong>Email address</strong> — for authentication and account recovery</li>
+  <li><strong>Password</strong> — stored as a salted hash, never in plaintext</li>
+  <li><strong>Display name</strong> — your chosen public identity</li>
+</ul>
+
+<h3>Local Application Data</h3>
+<p>LoonBox stores the following data <strong>locally on your device only</strong>:</p>
+<ul>
+  <li>Music library metadata (artist, album, track info, file paths)</li>
+  <li>Cached album art</li>
+  <li>Playlists, queue state, and playback history</li>
+  <li>EQ presets and audio settings</li>
+  <li>Feather (theme) preferences</li>
+  <li>Extension configuration</li>
+</ul>
+<p>This data never leaves your device unless you explicitly enable cloud sync.</p>
+
+<h3>Cloud Sync (Optional)</h3>
+<p>If you enable cloud sync, we store encrypted copies of:</p>
+<ul>
+  <li>Playlists and favorites</li>
+  <li>Feather and extension preferences</li>
+  <li>Application settings</li>
+</ul>
+<p>Your actual music files are never uploaded. Synced data is encrypted in transit and at rest.</p>
+
+<h3>Tremolo Purchases</h3>
+<p>When you purchase music through Tremolo, we store:</p>
+<ul>
+  <li>Purchase history and download records</li>
+  <li>Payment method (processed by our payment provider — we do not store full card numbers)</li>
+</ul>
+
+<h3>The Nest Downloads</h3>
+<p>When you download feathers or extensions from The Nest, we record:</p>
+<ul>
+  <li>Which items you've downloaded (for update notifications)</li>
+  <li>Extension permissions you've granted</li>
+</ul>
+
+<h3>MusicBrainz Lookups</h3>
+<p>When you use the auto-tagging feature, track metadata is sent to the <a href="https://musicbrainz.org/">MusicBrainz</a> API for matching. This is a direct request to MusicBrainz — we do not proxy or log these lookups.</p>
+
+<h3>Website Analytics</h3>
+<p>The loonbox.app website does not use third-party analytics, tracking pixels, or cookies. We collect only standard server access logs (IP address, timestamp, page requested), which are rotated and deleted after 30 days.</p>
+
+<h2>3. What We Don't Collect</h2>
+<ul>
+  <li>We do not scan or fingerprint your music files</li>
+  <li>We do not track what you listen to (unless you opt into a feature like scrobbling via an extension)</li>
+  <li>We do not collect device telemetry or crash reports without your consent</li>
+  <li>We do not use third-party analytics or ad networks in the application</li>
+  <li>We do not sell, rent, or share your data with third parties</li>
+</ul>
+
+<h2>4. Extensions and Third-Party Services</h2>
+<p>LoonBox extensions (e.g., a Last.fm scrobbler) may connect to third-party services. Each extension declares its required permissions in its manifest, and you must approve them before installation. Extension network access is sandboxed — extensions can only reach domains listed in their manifest.</p>
+<p>We are not responsible for the privacy practices of third-party services accessed through extensions. Review each extension's privacy disclosure on The Nest before installing.</p>
+
+<h2>5. Embedded Browser</h2>
+<p>LoonBox includes an embedded browser for accessing web content. The browser:</p>
+<ul>
+  <li>Routes traffic through a local filtering proxy on your device</li>
+  <li>Blocks ads and trackers using the Brave adblock engine</li>
+  <li>Does not share browsing data with MPLS LLC or any third party</li>
+  <li>Operates under a domain allowlist/blocklist you control</li>
+</ul>
+
+<h2>6. Data Storage and Security</h2>
+<p>Account data is stored on infrastructure operated by MPLS LLC. We use:</p>
+<ul>
+  <li>TLS encryption for all data in transit</li>
+  <li>Encryption at rest for sensitive data</li>
+  <li>Salted password hashing (bcrypt)</li>
+  <li>No shared cloud infrastructure for database storage</li>
+</ul>
+
+<h2>7. Data Retention and Deletion</h2>
+<p>You can delete your account at any time from within the application or by emailing <a href="mailto:privacy@loonbox.app">privacy@loonbox.app</a>. When you delete your account:</p>
+<ul>
+  <li>All account data is permanently deleted</li>
+  <li>Cloud sync data is permanently deleted</li>
+  <li>Purchase records are retained only as required for financial compliance</li>
+  <li>Disaster recovery backups are purged within 14 days</li>
+</ul>
+<p>Local application data (your library, playlists, settings) remains on your device and is yours to keep or remove.</p>
+
+<h2>8. Your Rights</h2>
+<p>You have the right to:</p>
+<ul>
+  <li><strong>Access</strong> — request a copy of all data we hold about you</li>
+  <li><strong>Correction</strong> — update your account information at any time</li>
+  <li><strong>Deletion</strong> — delete your account and all associated data</li>
+  <li><strong>Portability</strong> — export your playlists, favorites, and settings</li>
+</ul>
+<p>To exercise these rights, email <a href="mailto:privacy@loonbox.app">privacy@loonbox.app</a>.</p>
+
+<h2>9. Children's Privacy</h2>
+<p>LoonBox does not knowingly collect data from anyone under 13. If we learn that we have collected data from a child under 13, we will delete that data immediately.</p>
+
+<h2>10. Changes to This Policy</h2>
+<p>We will notify you of material changes to this policy at least 30 days before they take effect, via email or an in-app notification. Continued use after the effective date constitutes acceptance.</p>
+
+<h2>11. Contact</h2>
+<p>For privacy questions or data requests:</p>
+<ul>
+  <li><strong>Email:</strong> <a href="mailto:privacy@loonbox.app">privacy@loonbox.app</a></li>
+  <li><strong>Mail:</strong> MPLS LLC, Minneapolis, MN, USA</li>
+</ul>
+
+</LegalLayout>

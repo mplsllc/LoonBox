@@ -1,0 +1,200 @@
+---
+interface Props {
+  title: string;
+  lastUpdated: string;
+}
+
+const { title, lastUpdated } = Astro.props;
+const fullTitle = `${title} — LoonBox`;
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <title>{fullTitle}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo-group">
+        <img src="/images/app_icon.png" alt="LoonBox" class="logo" />
+        <span class="wordmark">LoonBox</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <article>
+      <h1>{title}</h1>
+      <p class="last-updated">Last updated: {lastUpdated}</p>
+      <slot />
+    </article>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>&copy; {new Date().getFullYear()} MPLS LLC</span>
+      <span class="footer-sep">&middot;</span>
+      <a href="/privacy">Privacy</a>
+      <span class="footer-sep">&middot;</span>
+      <a href="/terms">Terms</a>
+      <span class="footer-sep">&middot;</span>
+      <a href="/licenses">Licenses</a>
+      <span class="footer-sep">&middot;</span>
+      <a href="/moderation">Moderation</a>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style>
+  :root {
+    --bg: #0c0e14;
+    --bg-card: #141722;
+    --text: #e4e6ec;
+    --text-muted: #8b90a0;
+    --accent: #2F5F82;
+    --accent-light: #3d7aa3;
+    --max-width: 760px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  a { color: var(--accent-light); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  header {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+  }
+  .logo-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+  }
+  .logo-group:hover { text-decoration: none; }
+  .logo { width: 28px; height: 28px; border-radius: 6px; }
+  .wordmark { font-weight: 700; font-size: 1rem; letter-spacing: -0.02em; }
+
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  article :global(h1) {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .last-updated {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  article :global(h2) {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  article :global(h3) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.35rem;
+  }
+
+  article :global(p) {
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  article :global(ul), article :global(ol) {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  article :global(li) {
+    margin-bottom: 0.3rem;
+  }
+
+  article :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  article :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+  }
+
+  article :global(th), article :global(td) {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  article :global(th) {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  article :global(td) {
+    color: var(--text-muted);
+  }
+
+  article :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .footer-sep { margin: 0 0.5rem; }
+</style>
