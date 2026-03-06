@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../widgets/loon_loader.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
+import '../widgets/track_context_menu.dart';
 
 /// All playlists from the database.
 final playlistListProvider = FutureProvider<List<Playlist>>((ref) async {
@@ -57,7 +59,7 @@ class PlaylistsPage extends ConsumerWidget {
         ],
       ),
       body: playlistsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: LoonLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (playlists) {
           if (playlists.isEmpty) {
@@ -314,7 +316,7 @@ class PlaylistDetailPage extends ConsumerWidget {
         title: Text(playlist.name),
       ),
       body: tracksAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: LoonLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (tracks) {
           if (tracks.isEmpty) {
@@ -396,12 +398,10 @@ class PlaylistDetailPage extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: Text(
-                        [track.artist, track.album]
-                            .where((s) => s != null)
-                            .join(' — '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      subtitle: _ClickableSubtitle(
+                        artist: track.artist,
+                        album: track.album,
+                        db: ref.read(databaseProvider),
                       ),
                       trailing: Text(
                         _formatDuration(track.durationMs),
@@ -429,5 +429,55 @@ class PlaylistDetailPage extends ConsumerWidget {
     final m = total.inMinutes;
     final s = total.inSeconds.remainder(60);
     return '$m:${s.toString().padLeft(2, '0')}';
+  }
+}
+
+/// Subtitle row with separately clickable artist and album names.
+class _ClickableSubtitle extends StatelessWidget {
+  const _ClickableSubtitle({
+    this.artist,
+    this.album,
+    required this.db,
+  });
+
+  final String? artist;
+  final String? album;
+  final LoonBoxDatabase db;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.bodySmall;
+    final parts = <Widget>[];
+
+    if (artist != null) {
+      parts.add(MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => navigateToArtistByName(context, db, artist!),
+          child: Text(artist!, style: style, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+      ));
+    }
+    if (artist != null && album != null) {
+      parts.add(Text(' — ', style: style));
+    }
+    if (album != null) {
+      parts.add(Flexible(
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => navigateToAlbumByName(context, db, album!),
+            child: Text(album!, style: style, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+        ),
+      ));
+    }
+
+    if (parts.isEmpty) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: parts,
+    );
   }
 }

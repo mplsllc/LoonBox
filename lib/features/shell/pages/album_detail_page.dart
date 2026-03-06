@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/database.dart';
+import '../widgets/loon_loader.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../player/presentation/album_art_widget.dart';
 import '../../player/presentation/queue_provider.dart';
+import '../widgets/album_lookup_dialog.dart';
+import '../widgets/track_context_menu.dart';
 
 /// Provider for tracks in a specific album.
 final albumTracksProvider =
@@ -35,9 +39,21 @@ class AlbumDetailPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(album.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: l10n.contextLookUpAlbum,
+            onPressed: () {
+              final tracks = tracksAsync.valueOrNull;
+              if (tracks != null && tracks.isNotEmpty) {
+                showAlbumLookupDialog(context, ref, album, tracks);
+              }
+            },
+          ),
+        ],
       ),
       body: tracksAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: LoonLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (tracks) {
           return CustomScrollView(
@@ -49,15 +65,16 @@ class AlbumDetailPage extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Album art placeholder
-                      Container(
+                      // Album art
+                      SizedBox(
                         width: 180,
                         height: 180,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
+                        child: AlbumArtWidget(
+                          trackPath: tracks.isNotEmpty ? tracks.first.filePath : null,
+                          size: 180,
+                          borderRadius: 8,
+                          iconSize: 80,
                         ),
-                        child: Icon(Icons.album, size: 80, color: colorScheme.onSurfaceVariant),
                       ),
                       const SizedBox(width: 24),
                       Expanded(
@@ -68,10 +85,20 @@ class AlbumDetailPage extends ConsumerWidget {
                             if (album.artist != null)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  album.artist!,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: GestureDetector(
+                                    onTap: () => navigateToArtistByName(
+                                      context,
+                                      ref.read(databaseProvider),
+                                      album.artist!,
+                                    ),
+                                    child: Text(
+                                      album.artist!,
+                                      style: textTheme.titleMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -108,7 +135,7 @@ class AlbumDetailPage extends ConsumerWidget {
                     final track = tracks[index];
                     return GestureDetector(
                       onSecondaryTapUp: (details) {
-                        _showContextMenu(context, ref, details.globalPosition, track);
+                        showTrackContextMenu(context, ref, details.globalPosition, track, hideGoToAlbum: true);
                       },
                       child: ListTile(
                         leading: SizedBox(
@@ -127,11 +154,21 @@ class AlbumDetailPage extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: track.artist != null
-                            ? Text(
-                                track.artist!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodySmall,
+                            ? MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => navigateToArtistByName(
+                                    context,
+                                    ref.read(databaseProvider),
+                                    track.artist!,
+                                  ),
+                                  child: Text(
+                                    track.artist!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.bodySmall,
+                                  ),
+                                ),
                               )
                             : null,
                         trailing: Text(
@@ -154,26 +191,6 @@ class AlbumDetailPage extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  void _showContextMenu(BuildContext context, WidgetRef ref, Offset position, Track track) {
-    final l10n = AppLocalizations.of(context)!;
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
-      items: [
-        PopupMenuItem(value: 'play_next', child: Text(l10n.contextPlayNext)),
-        PopupMenuItem(value: 'play_later', child: Text(l10n.contextPlayLater)),
-      ],
-    ).then((value) {
-      if (value == null) return;
-      switch (value) {
-        case 'play_next':
-          ref.read(queueProvider.notifier).playNext(track);
-        case 'play_later':
-          ref.read(queueProvider.notifier).playLater(track);
-      }
-    });
   }
 
   String _formatDuration(int? ms) {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../database/database.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/audio_service.dart';
 import '../../shell/app_shell.dart';
+import '../../shell/widgets/track_context_menu.dart';
 import '../domain/player_state.dart';
 import 'album_art_widget.dart';
 import 'player_provider.dart';
@@ -31,8 +33,15 @@ class NowPlayingBar extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHigh,
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant, width: 0.5),
+          top: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(20),
+            offset: const Offset(0, -2),
+            blurRadius: 4,
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -62,7 +71,7 @@ class NowPlayingBar extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  // Album art placeholder + track info (tappable to open full view)
+                  // Left: Album art + track info
                   Expanded(
                     child: GestureDetector(
                       onTap: hasTrack
@@ -93,14 +102,33 @@ class NowPlayingBar extends ConsumerWidget {
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      Text(
-                                        queueTrack?.artist ?? '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
+                                      queueTrack?.artist != null
+                                          ? MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () => navigateToArtistByName(
+                                                  context,
+                                                  ref.read(databaseProvider),
+                                                  queueTrack!.artist!,
+                                                ),
+                                                child: Text(
+                                                  queueTrack!.artist!,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: textTheme.bodySmall?.copyWith(
+                                                    color: colorScheme.onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : Text(
+                                              '${playback.currentTrack!.codec} · ${playback.currentTrack!.sampleRate}Hz',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: textTheme.bodySmall?.copyWith(
+                                                color: colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
                                     ],
                                   )
                                 : Text(
@@ -114,19 +142,7 @@ class NowPlayingBar extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  // Position / duration
-                  if (hasTrack)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: Text(
-                        '${_formatTime(playback.positionMs)} / ${_formatTime(playback.durationMs)}',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontFeatures: [const FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ),
-                  // Shuffle
+                  // Center: Transport controls
                   Semantics(
                     label: queue.isShuffled ? l10n.playerShuffleOn : l10n.playerShuffleOff,
                     child: IconButton(
@@ -139,7 +155,6 @@ class NowPlayingBar extends ConsumerWidget {
                       tooltip: l10n.playerShuffle,
                     ),
                   ),
-                  // Transport controls
                   Semantics(
                     label: l10n.playerPrevious,
                     child: IconButton(
@@ -173,7 +188,6 @@ class NowPlayingBar extends ConsumerWidget {
                       tooltip: l10n.playerNext,
                     ),
                   ),
-                  // Repeat
                   Semantics(
                     label: switch (playback.repeat) {
                       RepeatMode.off => l10n.playerRepeatOff,
@@ -190,36 +204,54 @@ class NowPlayingBar extends ConsumerWidget {
                       tooltip: l10n.playerRepeat,
                     ),
                   ),
-                  // Volume
-                  IconButton(
-                    icon: Icon(
-                      playback.isMuted || playback.volume == 0
-                          ? Icons.volume_off
-                          : playback.volume < 0.5
-                              ? Icons.volume_down
-                              : Icons.volume_up,
-                    ),
-                    iconSize: 20,
-                    onPressed: () {
-                      final notifier = ref.read(playbackStateProvider.notifier);
-                      notifier.toggleMute();
-                      audio.setVolume(playback.isMuted ? playback.volume : 0.0);
-                    },
-                    tooltip: l10n.playerVolume,
-                  ),
-                  Semantics(
-                    label: l10n.playerVolume,
-                    child: SizedBox(
-                      width: 100,
-                      child: Slider(
-                        value: playback.isMuted ? 0 : playback.volume,
-                        onChanged: (v) {
-                          final notifier = ref.read(playbackStateProvider.notifier);
-                          if (playback.isMuted) notifier.toggleMute();
-                          notifier.setVolume(v);
-                          audio.setVolume(v);
-                        },
-                      ),
+                  // Right: Time + Volume
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (hasTrack)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: Text(
+                              '${_formatTime(playback.positionMs)} / ${_formatTime(playback.durationMs)}',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontFeatures: [const FontFeature.tabularFigures()],
+                              ),
+                            ),
+                          ),
+                        IconButton(
+                          icon: Icon(
+                            playback.isMuted || playback.volume == 0
+                                ? Icons.volume_off
+                                : playback.volume < 0.5
+                                    ? Icons.volume_down
+                                    : Icons.volume_up,
+                          ),
+                          iconSize: 20,
+                          onPressed: () {
+                            final notifier = ref.read(playbackStateProvider.notifier);
+                            notifier.toggleMute();
+                            audio.setVolume(playback.isMuted ? playback.volume : 0.0);
+                          },
+                          tooltip: l10n.playerVolume,
+                        ),
+                        Semantics(
+                          label: l10n.playerVolume,
+                          child: SizedBox(
+                            width: 100,
+                            child: Slider(
+                              value: playback.isMuted ? 0 : playback.volume,
+                              onChanged: (v) {
+                                final notifier = ref.read(playbackStateProvider.notifier);
+                                if (playback.isMuted) notifier.toggleMute();
+                                notifier.setVolume(v);
+                                audio.setVolume(v);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

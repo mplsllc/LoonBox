@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../widgets/loon_loader.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
-import '../widgets/add_to_playlist_dialog.dart';
-import 'album_detail_page.dart';
-import 'artist_detail_page.dart';
+import '../widgets/track_context_menu.dart';
+import 'auto_tag_page.dart';
 
 /// Provider for the track list from the database.
 final trackListProvider = FutureProvider<List<Track>>((ref) async {
@@ -19,14 +19,14 @@ final trackListProvider = FutureProvider<List<Track>>((ref) async {
 
 enum _SortColumn { title, artist, album, duration }
 
-class LibraryPage extends ConsumerStatefulWidget {
-  const LibraryPage({super.key});
+class SongsPage extends ConsumerStatefulWidget {
+  const SongsPage({super.key});
 
   @override
-  ConsumerState<LibraryPage> createState() => _LibraryPageState();
+  ConsumerState<SongsPage> createState() => _SongsPageState();
 }
 
-class _LibraryPageState extends ConsumerState<LibraryPage> {
+class _SongsPageState extends ConsumerState<SongsPage> {
   _SortColumn _sortColumn = _SortColumn.title;
   bool _sortAscending = true;
 
@@ -69,25 +69,36 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.libraryTitle),
-        actions: tracksAsync.whenOrNull(
-          data: (tracks) => [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  l10n.libraryTrackCount(tracks.length),
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+        title: Text(l10n.songsTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_fix_high),
+            tooltip: l10n.mbAutoTagTitle,
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const AutoTagPage(),
+              ));
+            },
+          ),
+          ...?tracksAsync.whenOrNull(
+            data: (tracks) => [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Center(
+                  child: Text(
+                    l10n.libraryTrackCount(tracks.length),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
       body: tracksAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: LoonLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (tracks) {
           if (tracks.isEmpty) {
@@ -118,12 +129,14 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                     final track = sorted[index];
                     return GestureDetector(
                       onSecondaryTapUp: (details) {
-                        _showContextMenu(context, ref, details.globalPosition, track);
+                        showTrackContextMenu(context, ref, details.globalPosition, track);
                       },
                       child: _TrackRow(
                         track: track,
+                        index: index,
                         colorScheme: colorScheme,
                         textTheme: textTheme,
+                        db: ref.read(databaseProvider),
                         onTap: () {
                           ref.read(queueProvider.notifier).setQueue(
                             sorted,
@@ -186,54 +199,6 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     );
   }
 
-  void _showContextMenu(BuildContext context, WidgetRef ref, Offset position, Track track) {
-    final l10n = AppLocalizations.of(context)!;
-    final db = ref.read(databaseProvider);
-
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
-      items: [
-        PopupMenuItem(value: 'play_next', child: Text(l10n.contextPlayNext)),
-        PopupMenuItem(value: 'play_later', child: Text(l10n.contextPlayLater)),
-        PopupMenuItem(value: 'add_playlist', child: Text(l10n.contextAddToPlaylist)),
-        if (track.album != null)
-          PopupMenuItem(value: 'go_album', child: Text(l10n.contextGoToAlbum)),
-        if (track.artist != null)
-          PopupMenuItem(value: 'go_artist', child: Text(l10n.contextGoToArtist)),
-      ],
-    ).then((value) async {
-      if (value == null) return;
-      switch (value) {
-        case 'play_next':
-          ref.read(queueProvider.notifier).playNext(track);
-        case 'play_later':
-          ref.read(queueProvider.notifier).playLater(track);
-        case 'add_playlist':
-          if (context.mounted) {
-            showAddToPlaylistDialog(context, ref, track);
-          }
-        case 'go_album':
-          final albums = await (db.select(db.albums)
-                ..where((a) => a.name.equals(track.album!)))
-              .get();
-          if (albums.isNotEmpty && context.mounted) {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => AlbumDetailPage(album: albums.first),
-            ));
-          }
-        case 'go_artist':
-          final artists = await (db.select(db.artists)
-                ..where((a) => a.name.equals(track.artist!)))
-              .get();
-          if (artists.isNotEmpty && context.mounted) {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ArtistDetailPage(artist: artists.first),
-            ));
-          }
-      }
-    });
-  }
 }
 
 class _SortableHeaderCell extends StatelessWidget {
@@ -299,22 +264,33 @@ class _SortableHeaderCell extends StatelessWidget {
 class _TrackRow extends StatelessWidget {
   const _TrackRow({
     required this.track,
+    required this.index,
     required this.colorScheme,
     required this.textTheme,
     required this.onTap,
+    required this.db,
   });
 
   final Track track;
+  final int index;
   final ColorScheme colorScheme;
   final TextTheme textTheme;
   final VoidCallback onTap;
+  final LoonBoxDatabase db;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    // Alternating row stripes — subtle tint on even rows
+    final rowColor = index.isEven
+        ? colorScheme.surfaceContainerLowest
+        : colorScheme.surfaceContainerLow;
+
+    return Material(
+      color: rowColor,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
             Expanded(
@@ -328,25 +304,43 @@ class _TrackRow extends StatelessWidget {
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                track.artist ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
+              child: track.artist != null
+                  ? MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => navigateToArtistByName(context, db, track.artist!),
+                        child: Text(
+                          track.artist!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                track.album ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
+              child: track.album != null
+                  ? MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => navigateToAlbumByName(context, db, track.album!),
+                        child: Text(
+                          track.album!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
             Expanded(
               flex: 1,
@@ -360,6 +354,7 @@ class _TrackRow extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

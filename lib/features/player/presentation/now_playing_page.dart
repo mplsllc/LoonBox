@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../database/database.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../shell/app_shell.dart';
+import '../../shell/widgets/track_context_menu.dart';
 import 'album_art_widget.dart';
 import 'player_provider.dart';
 import 'queue_provider.dart';
@@ -115,24 +117,52 @@ class NowPlayingPage extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      queueTrack?.artist ?? '',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (queueTrack?.album != null)
+                    if (queueTrack?.artist != null)
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () => navigateToArtistByName(
+                            context,
+                            ref.read(databaseProvider),
+                            queueTrack!.artist!,
+                          ),
+                          child: Text(
+                            queueTrack!.artist!,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      )
+                    else
                       Text(
-                        queueTrack!.album!,
-                        style: textTheme.bodyMedium?.copyWith(
+                        '',
+                        style: textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      ),
+                    if (queueTrack?.album != null)
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () => navigateToAlbumByName(
+                            context,
+                            ref.read(databaseProvider),
+                            queueTrack!.album!,
+                          ),
+                          child: Text(
+                            queueTrack!.album!,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     const SizedBox(height: 16),
                   ],

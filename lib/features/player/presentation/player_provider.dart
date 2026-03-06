@@ -1,5 +1,7 @@
+import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../database/database.dart' hide EqPreset;
 import '../../../services/audio_service.dart';
 import '../../../services/media_controls_service.dart';
 import '../domain/player_state.dart';
@@ -29,6 +31,30 @@ final audioEventListenerProvider = Provider<void>((ref) {
         notifier.updateState(state);
         mediaControls.updatePlaybackState(state);
       case TrackChangedEvent(:final trackInfo):
+        // Record skip if previous track was playing and position < 80% of duration
+        final prev = ref.read(playbackStateProvider);
+        if (prev.currentTrack != null && prev.state == PlaybackState.playing) {
+          final queue = ref.read(queueProvider);
+          final prevTrack = queue.currentTrack;
+          if (prevTrack != null &&
+              prev.durationMs > 0 &&
+              prev.positionMs < prev.durationMs * 0.8) {
+            final db = ref.read(databaseProvider);
+            final now = DateTime.now().millisecondsSinceEpoch;
+            // Record partial play in history
+            db.into(db.playHistory).insert(PlayHistoryCompanion.insert(
+              trackId: prevTrack.id,
+              playedAt: now,
+              durationListenedMs: Value(prev.positionMs),
+              completed: const Value(false),
+            ));
+            // Update skip stats
+            db.customStatement(
+              'UPDATE tracks SET skip_count = skip_count + 1, last_skipped_at = ? WHERE id = ?',
+              [now, prevTrack.id],
+            );
+          }
+        }
         notifier.updateTrack(trackInfo);
         final queueTrack = ref.read(queueProvider).currentTrack;
         mediaControls.updateTrack(
@@ -40,6 +66,24 @@ final audioEventListenerProvider = Provider<void>((ref) {
         );
       case TrackFinishedEvent():
         notifier.updateState(PlaybackState.stopped);
+        // Record completed play in history + update track stats
+        final queue = ref.read(queueProvider);
+        final track = queue.currentTrack;
+        if (track != null) {
+          final db = ref.read(databaseProvider);
+          final now = DateTime.now().millisecondsSinceEpoch;
+          final listenedMs = ref.read(playbackStateProvider).positionMs;
+          db.into(db.playHistory).insert(PlayHistoryCompanion.insert(
+            trackId: track.id,
+            playedAt: now,
+            durationListenedMs: Value(listenedMs),
+            completed: const Value(true),
+          ));
+          db.customStatement(
+            'UPDATE tracks SET play_count = play_count + 1, last_played_at = ? WHERE id = ?',
+            [now, track.id],
+          );
+        }
         // Auto-advance to next track in queue
         ref.read(queueProvider.notifier).next();
       case PlayerErrorEvent():

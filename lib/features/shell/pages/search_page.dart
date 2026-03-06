@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../widgets/loon_loader.dart';
 import '../../../database/database.dart';
 import '../../player/presentation/queue_provider.dart';
 import 'album_detail_page.dart';
@@ -106,7 +107,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         ),
       ),
       body: results.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: LoonLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (data) {
           if (ref.watch(searchQueryProvider).isEmpty) {

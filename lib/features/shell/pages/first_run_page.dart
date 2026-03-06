@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../features/library/data/library_repository.dart';
+import '../../../services/metadata_resolver.dart';
+import '../widgets/loon_loader.dart';
 import '../../../theme/feather_engine.dart';
 import '../../../theme/loonbox_theme.dart';
 
@@ -76,6 +78,10 @@ class _FirstRunPageState extends ConsumerState<FirstRunPage> {
         setState(() => _scannedCount = progress.scanned);
       }
     }
+
+    // Enrich from local metadata cache (no network)
+    final resolver = ref.read(metadataResolverProvider);
+    await repo.enrichFromCache(resolver);
 
     if (mounted) {
       setState(() {
@@ -163,7 +169,7 @@ class _FolderStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         if (scanning) ...[
-          const CircularProgressIndicator(),
+          const LoonLoader(),
           const SizedBox(height: 12),
           Text('Scanning... $scannedCount tracks found'),
         ] else ...[

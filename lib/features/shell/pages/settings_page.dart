@@ -5,12 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../database/database.dart' hide EqPreset;
 import '../../../features/library/data/library_repository.dart';
-import '../../../features/shell/pages/library_page.dart';
+import '../../../features/shell/pages/auto_tag_page.dart';
+import '../../../features/shell/pages/songs_page.dart';
 import '../../../services/audio_service.dart';
+import '../../../services/metadata_resolver.dart';
 import '../../../services/extension_service.dart';
 import '../../../theme/feather_engine.dart';
 import '../../../theme/loonbox_theme.dart';
 import '../../player/domain/eq_preset.dart';
+import '../../browser/browser_settings_section.dart';
 import '../../player/presentation/player_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -50,6 +53,15 @@ class SettingsPage extends ConsumerWidget {
             title: Text(l10n.settingsCleanLibrary),
             onTap: () => _clean(context, repo),
           ),
+          ListTile(
+            leading: const Icon(Icons.auto_fix_high),
+            title: Text(l10n.mbAutoTagTitle),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const AutoTagPage(),
+              ));
+            },
+          ),
           const SizedBox(height: 16),
 
           // Equalizer
@@ -65,6 +77,11 @@ class SettingsPage extends ConsumerWidget {
           // Extensions
           _SectionHeader(title: l10n.settingsExtensions),
           _ExtensionsSection(),
+          const SizedBox(height: 16),
+
+          // Browser
+          const _SectionHeader(title: 'Browser'),
+          const BrowserSettingsSection(),
           const SizedBox(height: 16),
 
           // About
@@ -101,22 +118,35 @@ class SettingsPage extends ConsumerWidget {
       count = progress.scanned;
     }
 
+    // Enrich newly scanned tracks from local metadata cache
+    final resolver = ref.read(metadataResolverProvider);
+    final enriched = await repo.enrichFromCache(resolver);
+
     ref.invalidate(trackListProvider);
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Scan complete — $count tracks found')),
+        SnackBar(content: Text(
+          'Scan complete — $count tracks found'
+          '${enriched > 0 ? ' ($enriched albums enriched from cache)' : ''}',
+        )),
       );
     }
   }
 
   Future<void> _rescan(BuildContext context, LibraryRepository repo, WidgetRef ref) async {
     await for (final _ in repo.rescanAll()) {}
+
+    final resolver = ref.read(metadataResolverProvider);
+    final enriched = await repo.enrichFromCache(resolver);
+
     ref.invalidate(trackListProvider);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rescan complete')),
+        SnackBar(content: Text(
+          'Rescan complete${enriched > 0 ? ' ($enriched albums enriched from cache)' : ''}',
+        )),
       );
     }
   }
