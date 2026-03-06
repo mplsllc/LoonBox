@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:io' show File;
 
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/database.dart';
 import '../../../services/library_service.dart';
+import '../../../services/metadata_resolver.dart';
+import '../../../services/musicbrainz_service.dart';
 import '../../../services/rust_library_service.dart';
+import '../../../utils/string_utils.dart';
 
 /// Scan progress state exposed to the UI.
 class ScanProgress {
@@ -80,35 +84,86 @@ class LibraryRepository {
   }
 
   /// Upsert a single track from scan metadata.
+  ///
+  /// Uses raw SQL with CASE WHEN to preserve overlay metadata fields
+  /// when the track has a MusicBrainz ID (meaning auto-tag has matched it).
+  /// File-intrinsic fields (codec, duration, sample rate, etc.) are always
+  /// updated from the file. dateAdded is only set on INSERT (never reset).
   Future<void> _upsertTrack(TrackMetadata meta) async {
     final track = meta.toTrack();
+    final now = DateTime.now().millisecondsSinceEpoch;
 
-    // Upsert the track by file path (unique constraint)
-    await _db.into(_db.tracks).insertOnConflictUpdate(
-          TracksCompanion.insert(
-            title: track.title,
-            filePath: Value(track.filePath),
-            fileSize: Value(track.fileSize),
-            artist: Value(track.artist),
-            albumArtist: Value(track.albumArtist),
-            album: Value(track.album),
-            genre: Value(track.genre),
-            year: Value(track.year),
-            trackNumber: Value(track.trackNumber),
-            discNumber: Value(track.discNumber),
-            durationMs: Value(track.durationMs),
-            codec: Value(track.codec),
-            sampleRate: Value(track.sampleRate),
-            bitDepth: Value(track.bitDepth),
-            channels: Value(track.channels),
-            hasAlbumArt: Value(track.hasAlbumArt),
-            musicbrainzTrackId: Value(track.musicbrainzTrackId),
-            musicbrainzArtistId: Value(track.musicbrainzArtistId),
-            replayGainTrack: Value(track.replayGainTrack),
-            replayGainAlbum: Value(track.replayGainAlbum),
-            dateAdded: DateTime.now().millisecondsSinceEpoch,
-          ),
-        );
+    await _db.customStatement(
+      '''INSERT INTO tracks (
+        title, file_path, file_size, artist, album_artist, album, genre,
+        year, track_number, disc_number, duration_ms, codec, sample_rate,
+        bit_depth, channels, has_album_art, musicbrainz_track_id,
+        musicbrainz_artist_id, replay_gain_track, replay_gain_album,
+        date_added, source
+      ) VALUES (
+        ?1, ?2, ?3, ?4, ?5, ?6, ?7,
+        ?8, ?9, ?10, ?11, ?12, ?13,
+        ?14, ?15, ?16, ?17,
+        ?18, ?19, ?20,
+        ?21, 'local'
+      )
+      ON CONFLICT (file_path) DO UPDATE SET
+        -- File-intrinsic fields: always update from file
+        file_size = excluded.file_size,
+        codec = excluded.codec,
+        sample_rate = excluded.sample_rate,
+        bit_depth = excluded.bit_depth,
+        channels = excluded.channels,
+        duration_ms = excluded.duration_ms,
+        has_album_art = excluded.has_album_art,
+        replay_gain_track = excluded.replay_gain_track,
+        replay_gain_album = excluded.replay_gain_album,
+        -- MB IDs from file: keep whichever is non-null (file or existing DB)
+        musicbrainz_track_id = COALESCE(excluded.musicbrainz_track_id, tracks.musicbrainz_track_id),
+        musicbrainz_artist_id = COALESCE(excluded.musicbrainz_artist_id, tracks.musicbrainz_artist_id),
+        -- Metadata fields: preserve if MB-flagged, otherwise update from file
+        title = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                THEN tracks.title ELSE excluded.title END,
+        artist = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                 THEN tracks.artist ELSE excluded.artist END,
+        album_artist = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                       THEN tracks.album_artist ELSE excluded.album_artist END,
+        album = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                THEN tracks.album ELSE excluded.album END,
+        genre = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                THEN tracks.genre ELSE excluded.genre END,
+        year = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+               THEN tracks.year ELSE excluded.year END,
+        track_number = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                       THEN tracks.track_number ELSE excluded.track_number END,
+        disc_number = CASE WHEN tracks.musicbrainz_track_id IS NOT NULL
+                      THEN tracks.disc_number ELSE excluded.disc_number END
+        -- date_added: intentionally excluded — only set on INSERT
+      ''',
+      [
+        track.title,         // ?1
+        track.filePath,      // ?2
+        track.fileSize,      // ?3
+        track.artist,        // ?4
+        track.albumArtist,   // ?5
+        track.album,         // ?6
+        track.genre,         // ?7
+        track.year,          // ?8
+        track.trackNumber,   // ?9
+        track.discNumber,    // ?10
+        track.durationMs,    // ?11
+        track.codec,         // ?12
+        track.sampleRate,    // ?13
+        track.bitDepth,      // ?14
+        track.channels,      // ?15
+        track.hasAlbumArt ? 1 : 0, // ?16
+        track.musicbrainzTrackId,  // ?17
+        track.musicbrainzArtistId, // ?18
+        track.replayGainTrack,     // ?19
+        track.replayGainAlbum,     // ?20
+        now,                       // ?21
+      ],
+    );
 
     // Ensure artist exists
     if (track.artist != null) {
@@ -142,11 +197,12 @@ class LibraryRepository {
   }
 
   /// Create album if not already in DB.
+  /// Matches by name + source only — different track artists on the same album
+  /// won't create duplicate entries.
   Future<void> _ensureAlbum(String name, {String? artist, int? year}) async {
     final existing = await (_db.select(_db.albums)
           ..where((a) =>
               a.name.equals(name) &
-              a.artist.equalsNullable(artist) &
               a.source.equals('local')))
         .getSingleOrNull();
 
@@ -159,6 +215,10 @@ class LibraryRepository {
               dateAdded: Value(DateTime.now().millisecondsSinceEpoch),
             ),
           );
+    } else if (existing.artist == null && artist != null) {
+      // Fill in artist if it was missing on the existing entry
+      await (_db.update(_db.albums)..where((a) => a.id.equals(existing.id)))
+          .write(AlbumsCompanion(artist: Value(artist)));
     }
   }
 
@@ -201,6 +261,96 @@ class LibraryRepository {
       }
     }
     return removed;
+  }
+
+  /// Apply cached MB metadata to albums that lack MB IDs.
+  /// Runs after library scan — no network calls, only local cache lookups.
+  /// Uses strict matching: position match requires title confirmation,
+  /// otherwise falls back to title-only match.
+  Future<int> enrichFromCache(TieredMetadataResolver resolver) async {
+    var enriched = 0;
+
+    final albums = await _db.select(_db.albums).get();
+
+    for (final album in albums) {
+      // Find tracks in this album that lack MB IDs
+      final tracks = await (_db.select(_db.tracks)
+            ..where((t) => t.album.equals(album.name))
+            ..where((t) => t.musicbrainzTrackId.isNull())
+            ..where((t) => t.musicbrainzReleaseId.isNull())
+            ..orderBy([
+              (t) => OrderingTerm.asc(t.discNumber),
+              (t) => OrderingTerm.asc(t.trackNumber),
+            ]))
+          .get();
+
+      if (tracks.isEmpty) continue;
+
+      final cachedRelease = await resolver.getCachedReleaseForAlbum(
+        album.name,
+        album.artist,
+      );
+      if (cachedRelease == null) continue;
+
+      final mbTracks = List<MusicBrainzRecording>.from(cachedRelease.tracks);
+      final matched = <MusicBrainzRecording>{};
+      var matchedAny = false;
+
+      await _db.transaction(() async {
+        for (final track in tracks) {
+          MusicBrainzRecording? best;
+          final localNorm = normalizeTitle(track.title);
+
+          // Strategy 1: Position match with title verification
+          if (track.trackNumber != null) {
+            final positional = mbTracks.where(
+              (mb) => mb.trackNumber == track.trackNumber && !matched.contains(mb),
+            );
+            if (positional.isNotEmpty) {
+              final candidate = positional.first;
+              // Require title agreement — skip if position matches but title doesn't
+              if (normalizeTitle(candidate.title) == localNorm) {
+                best = candidate;
+              }
+              // Position matched but title disagreed → do NOT fall through to
+              // title-only search. This prevents cross-matching on multi-disc
+              // releases where track numbers repeat.
+            }
+          }
+
+          // Strategy 2: Title-only match (only if no position match was attempted)
+          if (best == null && track.trackNumber == null) {
+            for (final mb in mbTracks) {
+              if (matched.contains(mb)) continue;
+              if (normalizeTitle(mb.title) == localNorm) {
+                best = mb;
+                break;
+              }
+            }
+          }
+
+          if (best == null) continue;
+          matched.add(best);
+
+          // Write MB IDs only — no metadata overlay (conservative)
+          await (_db.update(_db.tracks)..where((t) => t.id.equals(track.id)))
+              .write(TracksCompanion(
+            musicbrainzTrackId: Value(best.id),
+            musicbrainzArtistId: Value(best.artistId),
+            musicbrainzReleaseId: Value(best.releaseId),
+          ));
+          matchedAny = true;
+        }
+      });
+
+      if (matchedAny) {
+        enriched++;
+        debugPrint('[Enrichment] Applied cached MB IDs to '
+            '${matched.length}/${tracks.length} tracks in "${album.name}"');
+      }
+    }
+
+    return enriched;
   }
 
   /// Re-scan all watch directories.

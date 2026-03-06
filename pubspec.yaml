@@ -26,12 +26,18 @@ dependencies:
   flutter_rust_bridge: ^2.11.1
   freezed_annotation: ^2.4.1
 
-  # Icons
+  # HTTP client (MusicBrainz API, Cover Art Archive)
+  http: ^1.2.1
+
+  # Icons & SVG
   cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
   file_picker: ^10.3.10
   smtc_windows: ^1.1.0
   tray_manager: ^0.2.3
   window_manager: ^0.4.3
+  url_launcher: ^6.3.2
+  webview_windows: ^0.4.0
 
 dev_dependencies:
   flutter_test:
@@ -51,5 +57,6 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/icons/classic/
     - assets/fonts/
     - assets/default_feathers/

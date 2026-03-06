@@ -77,7 +77,7 @@ class MediaControlsService {
       artist: artist ?? '',
       album: album ?? '',
       albumArtist: artist ?? '',
-      thumbnail: thumbnailPath != null ? 'file://$thumbnailPath' : '',
+      thumbnail: thumbnailPath != null ? 'file://$thumbnailPath' : null,
     ));
 
     _smtc!.updateTimeline(PlaybackTimeline(

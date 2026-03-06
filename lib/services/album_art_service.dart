@@ -60,6 +60,15 @@ class AlbumArtService {
     return await rust.metadataReadAlbumArt(path: trackPath);
   }
 
+  /// Save externally-fetched cover art (e.g. from Cover Art Archive) to cache.
+  Future<String> saveCoverArt(String trackPath, List<int> bytes) async {
+    final cacheDir = await _ensureCacheDir();
+    final hash = trackPath.hashCode.toRadixString(16);
+    final cachedPath = p.join(cacheDir, '$hash.jpg');
+    await File(cachedPath).writeAsBytes(bytes);
+    return cachedPath;
+  }
+
   /// Clear the album art cache.
   Future<void> clearCache() async {
     final cacheDir = await _ensureCacheDir();

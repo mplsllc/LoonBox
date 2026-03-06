@@ -16,6 +16,8 @@ import 'tables/eq_presets.dart';
 import 'tables/settings.dart';
 import 'tables/extension_storage.dart';
 import 'tables/streaming_accounts.dart';
+import 'tables/metadata_releases.dart';
+import 'tables/metadata_release_mappings.dart';
 
 part 'database.g.dart';
 
@@ -31,6 +33,8 @@ part 'database.g.dart';
   Settings,
   ExtensionStorage,
   StreamingAccounts,
+  MetadataReleases,
+  MetadataReleaseMappings,
 ])
 class LoonBoxDatabase extends _$LoonBoxDatabase {
   LoonBoxDatabase() : super(_openConnection());
@@ -38,7 +42,7 @@ class LoonBoxDatabase extends _$LoonBoxDatabase {
   LoonBoxDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,16 +51,20 @@ class LoonBoxDatabase extends _$LoonBoxDatabase {
           await _seedEqPresets();
         },
         onUpgrade: (m, from, to) async {
-          // Step-by-step migrations. Each version bump gets its own block.
-          // This ensures users upgrading from any version reach the latest schema.
-          //
-          // Example for future use (uncomment when schemaVersion bumps to 2):
-          // if (from < 2) {
-          //   await m.addColumn(tracks, tracks.someNewColumn);
-          // }
-          // if (from < 3) {
-          //   await m.createTable(someNewTable);
-          // }
+          if (from < 2) {
+            // Merge duplicate albums: keep the first entry per (name, source),
+            // delete the rest. This fixes albums that were duplicated because
+            // tracks had different artists (e.g., compilations, featured artists).
+            await customStatement('''
+              DELETE FROM albums WHERE id NOT IN (
+                SELECT MIN(id) FROM albums GROUP BY name, source
+              )
+            ''');
+          }
+          if (from < 3) {
+            await m.createTable(metadataReleases);
+            await m.createTable(metadataReleaseMappings);
+          }
         },
         beforeOpen: (details) async {
           // Enable foreign keys for referential integrity

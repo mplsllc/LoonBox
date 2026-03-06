@@ -100,6 +100,18 @@ abstract class AppLocalizations {
   /// **'LoonBox'**
   String get appTitle;
 
+  /// Sidebar navigation: Home
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// Sidebar navigation: Songs
+  ///
+  /// In en, this message translates to:
+  /// **'Songs'**
+  String get navSongs;
+
   /// Sidebar navigation: Library
   ///
   /// In en, this message translates to:
@@ -201,6 +213,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No track loaded'**
   String get playerNoTrack;
+
+  /// Songs screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Songs'**
+  String get songsTitle;
 
   /// Library screen title
   ///
@@ -609,6 +627,462 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'VU Meter'**
   String get visualizerVuMeter;
+
+  /// Context menu: MusicBrainz metadata lookup
+  ///
+  /// In en, this message translates to:
+  /// **'Look Up Info'**
+  String get contextLookUpInfo;
+
+  /// MusicBrainz results dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'MusicBrainz Lookup'**
+  String get mbLookupTitle;
+
+  /// Shown when MusicBrainz search returns nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found on MusicBrainz.'**
+  String get mbNoResults;
+
+  /// MusicBrainz match confidence
+  ///
+  /// In en, this message translates to:
+  /// **'Match: {score}%'**
+  String mbScore(int score);
+
+  /// Apply selected MusicBrainz metadata
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get mbApply;
+
+  /// Snackbar shown while writing MusicBrainz tags
+  ///
+  /// In en, this message translates to:
+  /// **'Writing tags...'**
+  String get mbApplying;
+
+  /// Snackbar shown after successful MB tag write
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata updated from MusicBrainz.'**
+  String get mbApplied;
+
+  /// Snackbar shown when MB tag write fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update metadata: {error}'**
+  String mbApplyError(String error);
+
+  /// Context menu: MusicBrainz album lookup
+  ///
+  /// In en, this message translates to:
+  /// **'Look Up Album'**
+  String get contextLookUpAlbum;
+
+  /// MusicBrainz album lookup dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Album Lookup'**
+  String get mbAlbumLookupTitle;
+
+  /// Track matching summary in album lookup
+  ///
+  /// In en, this message translates to:
+  /// **'{matched} of {total} tracks matched'**
+  String mbTrackMatched(int matched, int total);
+
+  /// Shown for tracks that already have MusicBrainz IDs
+  ///
+  /// In en, this message translates to:
+  /// **'Already tagged'**
+  String get mbAlreadyTagged;
+
+  /// Auto-tag library page title
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Tag Library'**
+  String get mbAutoTagTitle;
+
+  /// Auto-tag scan progress
+  ///
+  /// In en, this message translates to:
+  /// **'Looking up {current} of {total} albums...'**
+  String mbAutoTagProgress(int current, int total);
+
+  /// Auto-tag scan complete message
+  ///
+  /// In en, this message translates to:
+  /// **'Found matches for {count} albums'**
+  String mbAutoTagComplete(int count);
+
+  /// Shown when auto-tag finds no matches
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found'**
+  String get mbAutoTagNoMatches;
+
+  /// Start auto-tag scan button
+  ///
+  /// In en, this message translates to:
+  /// **'Start Scan'**
+  String get mbAutoTagStart;
+
+  /// Auto-tag page description
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your library and look up album metadata from MusicBrainz. You can review and accept changes before they are applied.'**
+  String get mbAutoTagDescription;
+
+  /// Accept all matched albums in auto-tag
+  ///
+  /// In en, this message translates to:
+  /// **'Accept All'**
+  String get mbAcceptAll;
+
+  /// Skip/reject an album match in auto-tag
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get mbReject;
+
+  /// Accept a single album match in auto-tag
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get mbAccept;
+
+  /// Confidence score for album match
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence: {score}%'**
+  String mbConfidence(int score);
+
+  /// Classic menu bar: File menu
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get menuFile;
+
+  /// Classic menu bar: Edit menu
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get menuEdit;
+
+  /// Classic menu bar: Controls menu
+  ///
+  /// In en, this message translates to:
+  /// **'Controls'**
+  String get menuControls;
+
+  /// Classic menu bar: View menu
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get menuView;
+
+  /// Classic menu bar: Tools menu
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get menuTools;
+
+  /// Classic menu bar: Help menu
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get menuHelp;
+
+  /// Classic menu bar: Quit item
+  ///
+  /// In en, this message translates to:
+  /// **'Quit'**
+  String get menuQuit;
+
+  /// Classic menu bar: Preferences item
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get menuPreferences;
+
+  /// Classic menu bar: About item
+  ///
+  /// In en, this message translates to:
+  /// **'About LoonBox'**
+  String get menuAbout;
+
+  /// Classic sidebar: Music library item
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get menuMusic;
+
+  /// Classic track info bar: no track playing
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing selected'**
+  String get nothingSelected;
+
+  /// Done/OK button
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Button to switch to manual search in MB lookup
+  ///
+  /// In en, this message translates to:
+  /// **'Search manually'**
+  String get mbManualSearch;
+
+  /// Manual search field: title
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get mbSearchTitle;
+
+  /// Manual search field: artist
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get mbSearchArtist;
+
+  /// Search button in MB lookup
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get mbSearch;
+
+  /// Context menu: remove track from playlist
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Playlist'**
+  String get contextRemoveFromPlaylist;
+
+  /// Context menu: show track properties
+  ///
+  /// In en, this message translates to:
+  /// **'Properties'**
+  String get contextProperties;
+
+  /// Context menu: play all tracks in album
+  ///
+  /// In en, this message translates to:
+  /// **'Play Album'**
+  String get contextPlayAlbum;
+
+  /// Context menu: add all album tracks to queue
+  ///
+  /// In en, this message translates to:
+  /// **'Add Album to Queue'**
+  String get contextAddAlbumToQueue;
+
+  /// Home greeting: morning (5am-12pm)
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get homeGreetingMorning;
+
+  /// Home greeting: afternoon (12pm-5pm)
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get homeGreetingAfternoon;
+
+  /// Home greeting: evening (5pm-5am)
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get homeGreetingEvening;
+
+  /// Home greeting: new user with no play history
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to LoonBox'**
+  String get homeWelcome;
+
+  /// Insights card header
+  ///
+  /// In en, this message translates to:
+  /// **'Your Listening'**
+  String get homeYourListening;
+
+  /// Privacy label on insights card
+  ///
+  /// In en, this message translates to:
+  /// **'Private to you'**
+  String get homePrivateToYou;
+
+  /// Label under all-time listening stat
+  ///
+  /// In en, this message translates to:
+  /// **'listened all time'**
+  String get homeListenedAllTime;
+
+  /// Label under weekly listening stat
+  ///
+  /// In en, this message translates to:
+  /// **'this week'**
+  String get homeThisWeek;
+
+  /// Week-over-week trend
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% vs last week'**
+  String homeVsLastWeek(String percent);
+
+  /// Label under streak stat
+  ///
+  /// In en, this message translates to:
+  /// **'day streak'**
+  String get homeStreak;
+
+  /// Label for top artist stat
+  ///
+  /// In en, this message translates to:
+  /// **'Top artist this month'**
+  String get homeTopArtistMonth;
+
+  /// Collection stat: tracks
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tracks'**
+  String homeStatsTracks(int count);
+
+  /// Collection stat: albums
+  ///
+  /// In en, this message translates to:
+  /// **'{count} albums'**
+  String homeStatsAlbums(int count);
+
+  /// Collection stat: artists
+  ///
+  /// In en, this message translates to:
+  /// **'{count} artists'**
+  String homeStatsArtists(int count);
+
+  /// Section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Played'**
+  String get homeRecentlyPlayed;
+
+  /// Section title
+  ///
+  /// In en, this message translates to:
+  /// **'Top Albums'**
+  String get homeTopAlbums;
+
+  /// Section title
+  ///
+  /// In en, this message translates to:
+  /// **'Jump Back In'**
+  String get homeJumpBackIn;
+
+  /// Section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Added'**
+  String get homeRecentlyAdded;
+
+  /// Section title
+  ///
+  /// In en, this message translates to:
+  /// **'Rediscover'**
+  String get homeRediscover;
+
+  /// Refresh button on discover section
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get homeRefresh;
+
+  /// Discover reason: forgotten
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t listened to this in a while'**
+  String get homeForgotten;
+
+  /// Discover reason: never played
+  ///
+  /// In en, this message translates to:
+  /// **'Albums you\'ve never played'**
+  String get homeNeverPlayed;
+
+  /// Discover fallback label
+  ///
+  /// In en, this message translates to:
+  /// **'From your collection'**
+  String get homeFromCollection;
+
+  /// Play count label on top albums
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 play} other{{count} plays}}'**
+  String homePlayCount(int count);
+
+  /// Coming soon badge
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get homeComingSoon;
+
+  /// Tremolo store name
+  ///
+  /// In en, this message translates to:
+  /// **'Tremolo'**
+  String get homeTremolo;
+
+  /// Tremolo description
+  ///
+  /// In en, this message translates to:
+  /// **'Discover & support artists directly'**
+  String get homeTremoloDesc;
+
+  /// The Nest marketplace name
+  ///
+  /// In en, this message translates to:
+  /// **'The Nest'**
+  String get homeNest;
+
+  /// The Nest description
+  ///
+  /// In en, this message translates to:
+  /// **'Feathers & extensions marketplace'**
+  String get homeNestDesc;
+
+  /// Onboarding: empty library title
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to LoonBox'**
+  String get homeEmptyTitle;
+
+  /// Onboarding: step 1
+  ///
+  /// In en, this message translates to:
+  /// **'Add your music'**
+  String get homeEmptyAddMusic;
+
+  /// Onboarding: step 2
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-tag your library'**
+  String get homeEmptyAutoTag;
+
+  /// Onboarding: auto-tag description
+  ///
+  /// In en, this message translates to:
+  /// **'Let LoonBox identify and organize your music using MusicBrainz'**
+  String get homeEmptyAutoTagDesc;
+
+  /// Onboarding: auto-tag disabled tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Add music first'**
+  String get homeEmptyAutoTagDisabled;
 }
 
 class _AppLocalizationsDelegate

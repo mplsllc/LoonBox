@@ -9,6 +9,7 @@ import 'loonbox_theme.dart';
 import 'default_feathers/bluemonday.dart';
 import 'default_feathers/gonzo.dart';
 import 'default_feathers/pinkmartini.dart';
+import 'default_feathers/nightingale.dart';
 import 'default_feathers/purplerain.dart';
 
 /// Registry of all available feathers (built-in + user-installed).
@@ -20,6 +21,7 @@ class FeatherEngine {
     gonzo.id: gonzo,
     pinkMartini.id: pinkMartini,
     purpleRain.id: purpleRain,
+    nightingale.id: nightingale,
   };
 
   static final Map<String, LoonBoxFeather> _userInstalled = {};

@@ -25,16 +25,36 @@ class FeatherThemeBuilder {
     );
 
     // Override individual colors if specified in the manifest
+    final surfaceColor = colors.surface != null ? FeatherColors.parseHex(colors.surface!) : null;
+    final bgColor = colors.background != null ? FeatherColors.parseHex(colors.background!) : null;
+
     colorScheme = colorScheme.copyWith(
       primary: FeatherColors.parseHex(colors.primary),
       secondary: colors.secondary != null ? FeatherColors.parseHex(colors.secondary!) : null,
       tertiary: colors.tertiary != null ? FeatherColors.parseHex(colors.tertiary!) : null,
-      surface: colors.surface != null ? FeatherColors.parseHex(colors.surface!) : null,
+      surface: surfaceColor,
       error: colors.error != null ? FeatherColors.parseHex(colors.error!) : null,
       onPrimary: colors.onPrimary != null ? FeatherColors.parseHex(colors.onPrimary!) : null,
       onSecondary: colors.onSecondary != null ? FeatherColors.parseHex(colors.onSecondary!) : null,
       onSurface: colors.onSurface != null ? FeatherColors.parseHex(colors.onSurface!) : null,
     );
+
+    // When explicit surface/background colors are set, also override container
+    // variants to prevent the seed color from tinting all surfaces.
+    // Uses wider lightness steps to create visible contrast between panels.
+    if (surfaceColor != null || bgColor != null) {
+      final base = surfaceColor ?? bgColor!;
+      final HSLColor hsl = HSLColor.fromColor(base);
+      colorScheme = colorScheme.copyWith(
+        surfaceContainerLowest: hsl.withLightness((hsl.lightness - 0.10).clamp(0, 1)).toColor(),
+        surfaceContainerLow: hsl.withLightness((hsl.lightness - 0.05).clamp(0, 1)).toColor(),
+        surfaceContainer: base,
+        surfaceContainerHigh: hsl.withLightness((hsl.lightness + 0.06).clamp(0, 1)).toColor(),
+        surfaceContainerHighest: hsl.withLightness((hsl.lightness + 0.12).clamp(0, 1)).toColor(),
+        surfaceDim: bgColor ?? hsl.withLightness((hsl.lightness - 0.12).clamp(0, 1)).toColor(),
+        surfaceBright: hsl.withLightness((hsl.lightness + 0.18).clamp(0, 1)).toColor(),
+      );
+    }
 
     // Build text theme with optional font overrides
     TextTheme? textTheme;

@@ -4,6 +4,10 @@
   "appTitle": "LoonBox",
   "@appTitle": { "description": "The application title" },
 
+  "navHome": "Home",
+  "@navHome": { "description": "Sidebar navigation: Home" },
+  "navSongs": "Songs",
+  "@navSongs": { "description": "Sidebar navigation: Songs" },
   "navLibrary": "Library",
   "@navLibrary": { "description": "Sidebar navigation: Library" },
   "navAlbums": "Albums",
@@ -40,6 +44,8 @@
   "playerNoTrack": "No track loaded",
   "@playerNoTrack": { "description": "Shown when no track is playing" },
 
+  "songsTitle": "Songs",
+  "@songsTitle": { "description": "Songs screen title" },
   "libraryTitle": "Library",
   "@libraryTitle": { "description": "Library screen title" },
   "libraryEmpty": "Your library is empty. Add a watch directory in Settings to get started.",
@@ -227,5 +233,209 @@
   "visualizerOscilloscope": "Oscilloscope",
   "@visualizerOscilloscope": { "description": "Oscilloscope visualizer style" },
   "visualizerVuMeter": "VU Meter",
-  "@visualizerVuMeter": { "description": "VU meter visualizer style" }
+  "@visualizerVuMeter": { "description": "VU meter visualizer style" },
+
+  "contextLookUpInfo": "Look Up Info",
+  "@contextLookUpInfo": { "description": "Context menu: MusicBrainz metadata lookup" },
+  "mbLookupTitle": "MusicBrainz Lookup",
+  "@mbLookupTitle": { "description": "MusicBrainz results dialog title" },
+  "mbNoResults": "No matches found on MusicBrainz.",
+  "@mbNoResults": { "description": "Shown when MusicBrainz search returns nothing" },
+  "mbScore": "Match: {score}%",
+  "@mbScore": {
+    "description": "MusicBrainz match confidence",
+    "placeholders": { "score": { "type": "int" } }
+  },
+  "mbApply": "Apply",
+  "@mbApply": { "description": "Apply selected MusicBrainz metadata" },
+  "mbApplying": "Writing tags...",
+  "@mbApplying": { "description": "Snackbar shown while writing MusicBrainz tags" },
+  "mbApplied": "Metadata updated from MusicBrainz.",
+  "@mbApplied": { "description": "Snackbar shown after successful MB tag write" },
+  "mbApplyError": "Failed to update metadata: {error}",
+  "@mbApplyError": {
+    "description": "Snackbar shown when MB tag write fails",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "contextLookUpAlbum": "Look Up Album",
+  "@contextLookUpAlbum": { "description": "Context menu: MusicBrainz album lookup" },
+  "mbAlbumLookupTitle": "Album Lookup",
+  "@mbAlbumLookupTitle": { "description": "MusicBrainz album lookup dialog title" },
+  "mbTrackMatched": "{matched} of {total} tracks matched",
+  "@mbTrackMatched": {
+    "description": "Track matching summary in album lookup",
+    "placeholders": {
+      "matched": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "mbAlreadyTagged": "Already tagged",
+  "@mbAlreadyTagged": { "description": "Shown for tracks that already have MusicBrainz IDs" },
+  "mbAutoTagTitle": "Auto-Tag Library",
+  "@mbAutoTagTitle": { "description": "Auto-tag library page title" },
+  "mbAutoTagProgress": "Looking up {current} of {total} albums...",
+  "@mbAutoTagProgress": {
+    "description": "Auto-tag scan progress",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "mbAutoTagComplete": "Found matches for {count} albums",
+  "@mbAutoTagComplete": {
+    "description": "Auto-tag scan complete message",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mbAutoTagNoMatches": "No matches found",
+  "@mbAutoTagNoMatches": { "description": "Shown when auto-tag finds no matches" },
+  "mbAutoTagStart": "Start Scan",
+  "@mbAutoTagStart": { "description": "Start auto-tag scan button" },
+  "mbAutoTagDescription": "Scan your library and look up album metadata from MusicBrainz. You can review and accept changes before they are applied.",
+  "@mbAutoTagDescription": { "description": "Auto-tag page description" },
+  "mbAcceptAll": "Accept All",
+  "@mbAcceptAll": { "description": "Accept all matched albums in auto-tag" },
+  "mbReject": "Skip",
+  "@mbReject": { "description": "Skip/reject an album match in auto-tag" },
+  "mbAccept": "Accept",
+  "@mbAccept": { "description": "Accept a single album match in auto-tag" },
+  "mbConfidence": "Confidence: {score}%",
+  "@mbConfidence": {
+    "description": "Confidence score for album match",
+    "placeholders": { "score": { "type": "int" } }
+  },
+
+  "menuFile": "File",
+  "@menuFile": { "description": "Classic menu bar: File menu" },
+  "menuEdit": "Edit",
+  "@menuEdit": { "description": "Classic menu bar: Edit menu" },
+  "menuControls": "Controls",
+  "@menuControls": { "description": "Classic menu bar: Controls menu" },
+  "menuView": "View",
+  "@menuView": { "description": "Classic menu bar: View menu" },
+  "menuTools": "Tools",
+  "@menuTools": { "description": "Classic menu bar: Tools menu" },
+  "menuHelp": "Help",
+  "@menuHelp": { "description": "Classic menu bar: Help menu" },
+  "menuQuit": "Quit",
+  "@menuQuit": { "description": "Classic menu bar: Quit item" },
+  "menuPreferences": "Preferences",
+  "@menuPreferences": { "description": "Classic menu bar: Preferences item" },
+  "menuAbout": "About LoonBox",
+  "@menuAbout": { "description": "Classic menu bar: About item" },
+  "menuMusic": "Music",
+  "@menuMusic": { "description": "Classic sidebar: Music library item" },
+  "nothingSelected": "Nothing selected",
+  "@nothingSelected": { "description": "Classic track info bar: no track playing" },
+
+  "done": "Done",
+  "@done": { "description": "Done/OK button" },
+
+  "mbManualSearch": "Search manually",
+  "@mbManualSearch": { "description": "Button to switch to manual search in MB lookup" },
+  "mbSearchTitle": "Title",
+  "@mbSearchTitle": { "description": "Manual search field: title" },
+  "mbSearchArtist": "Artist",
+  "@mbSearchArtist": { "description": "Manual search field: artist" },
+  "mbSearch": "Search",
+  "@mbSearch": { "description": "Search button in MB lookup" },
+
+  "contextRemoveFromPlaylist": "Remove from Playlist",
+  "@contextRemoveFromPlaylist": { "description": "Context menu: remove track from playlist" },
+  "contextProperties": "Properties",
+  "@contextProperties": { "description": "Context menu: show track properties" },
+  "contextPlayAlbum": "Play Album",
+  "@contextPlayAlbum": { "description": "Context menu: play all tracks in album" },
+  "contextAddAlbumToQueue": "Add Album to Queue",
+  "@contextAddAlbumToQueue": { "description": "Context menu: add all album tracks to queue" },
+
+  "homeGreetingMorning": "Good morning",
+  "@homeGreetingMorning": { "description": "Home greeting: morning (5am-12pm)" },
+  "homeGreetingAfternoon": "Good afternoon",
+  "@homeGreetingAfternoon": { "description": "Home greeting: afternoon (12pm-5pm)" },
+  "homeGreetingEvening": "Good evening",
+  "@homeGreetingEvening": { "description": "Home greeting: evening (5pm-5am)" },
+  "homeWelcome": "Welcome to LoonBox",
+  "@homeWelcome": { "description": "Home greeting: new user with no play history" },
+
+  "homeYourListening": "Your Listening",
+  "@homeYourListening": { "description": "Insights card header" },
+  "homePrivateToYou": "Private to you",
+  "@homePrivateToYou": { "description": "Privacy label on insights card" },
+  "homeListenedAllTime": "listened all time",
+  "@homeListenedAllTime": { "description": "Label under all-time listening stat" },
+  "homeThisWeek": "this week",
+  "@homeThisWeek": { "description": "Label under weekly listening stat" },
+  "homeVsLastWeek": "{percent}% vs last week",
+  "@homeVsLastWeek": {
+    "description": "Week-over-week trend",
+    "placeholders": { "percent": { "type": "String" } }
+  },
+  "homeStreak": "day streak",
+  "@homeStreak": { "description": "Label under streak stat" },
+  "homeTopArtistMonth": "Top artist this month",
+  "@homeTopArtistMonth": { "description": "Label for top artist stat" },
+  "homeStatsTracks": "{count} tracks",
+  "@homeStatsTracks": {
+    "description": "Collection stat: tracks",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeStatsAlbums": "{count} albums",
+  "@homeStatsAlbums": {
+    "description": "Collection stat: albums",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeStatsArtists": "{count} artists",
+  "@homeStatsArtists": {
+    "description": "Collection stat: artists",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "homeRecentlyPlayed": "Recently Played",
+  "@homeRecentlyPlayed": { "description": "Section title" },
+  "homeTopAlbums": "Top Albums",
+  "@homeTopAlbums": { "description": "Section title" },
+  "homeJumpBackIn": "Jump Back In",
+  "@homeJumpBackIn": { "description": "Section title" },
+  "homeRecentlyAdded": "Recently Added",
+  "@homeRecentlyAdded": { "description": "Section title" },
+  "homeRediscover": "Rediscover",
+  "@homeRediscover": { "description": "Section title" },
+  "homeRefresh": "Refresh",
+  "@homeRefresh": { "description": "Refresh button on discover section" },
+  "homeForgotten": "You haven't listened to this in a while",
+  "@homeForgotten": { "description": "Discover reason: forgotten" },
+  "homeNeverPlayed": "Albums you've never played",
+  "@homeNeverPlayed": { "description": "Discover reason: never played" },
+  "homeFromCollection": "From your collection",
+  "@homeFromCollection": { "description": "Discover fallback label" },
+  "homePlayCount": "{count, plural, =1{1 play} other{{count} plays}}",
+  "@homePlayCount": {
+    "description": "Play count label on top albums",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "homeComingSoon": "Coming Soon",
+  "@homeComingSoon": { "description": "Coming soon badge" },
+  "homeTremolo": "Tremolo",
+  "@homeTremolo": { "description": "Tremolo store name" },
+  "homeTremoloDesc": "Discover & support artists directly",
+  "@homeTremoloDesc": { "description": "Tremolo description" },
+  "homeNest": "The Nest",
+  "@homeNest": { "description": "The Nest marketplace name" },
+  "homeNestDesc": "Feathers & extensions marketplace",
+  "@homeNestDesc": { "description": "The Nest description" },
+
+  "homeEmptyTitle": "Welcome to LoonBox",
+  "@homeEmptyTitle": { "description": "Onboarding: empty library title" },
+  "homeEmptyAddMusic": "Add your music",
+  "@homeEmptyAddMusic": { "description": "Onboarding: step 1" },
+  "homeEmptyAutoTag": "Auto-tag your library",
+  "@homeEmptyAutoTag": { "description": "Onboarding: step 2" },
+  "homeEmptyAutoTagDesc": "Let LoonBox identify and organize your music using MusicBrainz",
+  "@homeEmptyAutoTagDesc": { "description": "Onboarding: auto-tag description" },
+  "homeEmptyAutoTagDisabled": "Add music first",
+  "@homeEmptyAutoTagDisabled": { "description": "Onboarding: auto-tag disabled tooltip" }
 }

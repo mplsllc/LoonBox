@@ -14,6 +14,6 @@ class Albums extends Table {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {name, artist, source},
+        {name, source},
       ];
 }

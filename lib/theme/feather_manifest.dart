@@ -29,6 +29,7 @@ class FeatherManifest {
     this.backgroundOpacity = 1.0,
     this.playerBarStyle = PlayerBarStyle.standard,
     this.sidebarStyle = SidebarStyle.rail,
+    this.brightness,
   });
 
   // ── Core identity ──
@@ -61,6 +62,11 @@ class FeatherManifest {
   final PlayerBarStyle playerBarStyle;
   final SidebarStyle sidebarStyle;
 
+  /// Optional brightness override. When set, the app forces this brightness
+  /// instead of following system preference. Dark feathers like Nightingale
+  /// should set this to [FeatherBrightness.dark].
+  final FeatherBrightness? brightness;
+
   factory FeatherManifest.fromJson(Map<String, dynamic> json) {
     return FeatherManifest(
       id: json['id'] as String,
@@ -87,12 +93,15 @@ class FeatherManifest {
       backgroundImage: json['background_image'] as String?,
       backgroundBlendMode: json['background_blend_mode'] as String?,
       backgroundOpacity: (json['background_opacity'] as num?)?.toDouble() ?? 1.0,
-      playerBarStyle: PlayerBarStyle.values.byName(
-        json['player_bar_style'] as String? ?? 'standard',
+      playerBarStyle: _parseEnum(
+        PlayerBarStyle.values, json['player_bar_style'] as String?, PlayerBarStyle.standard,
       ),
-      sidebarStyle: SidebarStyle.values.byName(
-        json['sidebar_style'] as String? ?? 'rail',
+      sidebarStyle: _parseEnum(
+        SidebarStyle.values, json['sidebar_style'] as String?, SidebarStyle.rail,
       ),
+      brightness: json['brightness'] != null
+          ? _parseEnum(FeatherBrightness.values, json['brightness'] as String?, FeatherBrightness.dark)
+          : null,
     );
   }
 
@@ -119,6 +128,7 @@ class FeatherManifest {
         'background_opacity': backgroundOpacity,
         'player_bar_style': playerBarStyle.name,
         'sidebar_style': sidebarStyle.name,
+        if (brightness != null) 'brightness': brightness!.name,
       };
 
   static FeatherManifest? tryParse(String jsonString) {
@@ -273,6 +283,17 @@ class FeatherFontSizes {
 
 enum FeatherDensity { compact, normal, comfortable }
 
-enum PlayerBarStyle { standard, minimal, expanded }
+enum FeatherBrightness { light, dark }
 
-enum SidebarStyle { rail, drawer, hidden }
+enum PlayerBarStyle { standard, minimal, expanded, topTransport }
+
+enum SidebarStyle { rail, drawer, hidden, tree }
+
+/// Safely parse an enum value, falling back to a default for unknown strings.
+T _parseEnum<T extends Enum>(List<T> values, String? name, T defaultValue) {
+  if (name == null) return defaultValue;
+  for (final v in values) {
+    if (v.name == name) return v;
+  }
+  return defaultValue;
+}

@@ -57,3 +57,6 @@ windows/flutter/ephemeral/
 .env
 *.key
 *.pem
+
+# Private / legacy (local only)
+.private/
